@@ -1,0 +1,13 @@
+menuconfig NOTECARD
+	bool "Blues NoteCard driver"
+	help
+        None
+
+if NOTECARD
+
+config NOTECARD_HEAP_SIZE
+	int "heap buffer size"
+    default 4096
+	help
+        Controls the size of static heap, used by note-c library.
+endif

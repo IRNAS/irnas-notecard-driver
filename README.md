@@ -2,6 +2,13 @@
 
 This repository contains a Zephyr driver for Blues' Notecard modules.
 
+## Important
+
+Please read the documentation in [notecard.h](./drivers/notecard/notecard.h) and
+see how to use the API in the samples.
+
+This driver is still work in progress!.
+
 ## Setup
 
 If not already set up, install west and other required tools. Follow the steps
