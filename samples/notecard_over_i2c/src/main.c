@@ -10,7 +10,6 @@
 #include <note.h>
 
 #include <zephyr/device.h>
-#include <zephyr/drivers/uart.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
