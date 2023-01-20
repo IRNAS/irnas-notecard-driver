@@ -4,7 +4,7 @@
  * COPYRIGHT NOTICE: (c) 2022 Irnas. All rights reserved.
  * Author: Marko Sagadin <marko@irnas.eu>
  */
-#include "private/notecard_private.h"
+#include "notecard_private.h"
 
 #include <notecard.h>
 
