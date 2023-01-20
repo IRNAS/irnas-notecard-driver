@@ -92,7 +92,7 @@ void notecard_ctrl_take(const struct device *dev)
 	k_mutex_lock(&notecard_mutex, K_FOREVER);
 
 	const struct notecard_config *config = dev->config;
-	config->attach_bus_api(&config->bus);
+	config->bus.attach_bus_api(&config->bus);
 }
 
 void notecard_ctrl_release(const struct device *dev)
@@ -102,20 +102,24 @@ void notecard_ctrl_release(const struct device *dev)
 
 #define NOTECARD_CONFIG_UART(inst)                                                                 \
 	{                                                                                          \
-		.bus.uart = DEVICE_DT_GET(DT_BUS(DT_DRV_INST(inst))),                              \
+		.dev.uart = DEVICE_DT_GET(DT_BUS(DT_DRV_INST(inst))),                              \
 		.attach_bus_api = notecard_uart_attach_bus_api,                                    \
 	}
 
 #define NOTECARD_CONFIG_I2C(inst)                                                                  \
 	{                                                                                          \
-		.bus.i2c = I2C_DT_SPEC_INST_GET(inst),                                             \
+		.dev.i2c = I2C_DT_SPEC_INST_GET(inst),                                             \
 		.attach_bus_api = notecard_i2c_attach_bus_api,                                     \
 	}
 
 #define NOTECARD_DEFINE(inst)                                                                      \
-	static const struct notecard_config notecard_config_##inst =                               \
-		COND_CODE_1(DT_INST_ON_BUS(inst, uart), (NOTECARD_CONFIG_UART(inst)),              \
-			    (NOTECARD_CONFIG_I2C(inst)));                                          \
+	static const struct notecard_config notecard_config_##inst = {                             \
+		.bus = COND_CODE_1(DT_INST_ON_BUS(inst, uart), (NOTECARD_CONFIG_UART(inst)),       \
+				   (NOTECARD_CONFIG_I2C(inst))),                                   \
+		IF_ENABLED(DT_INST_NODE_HAS_PROP(inst, attn_p_gpios),                              \
+			   (.attn_p_gpio = DT_INST_PROP(N, attn_p_gpios), ))                       \
+                                                                                                   \
+	};                                                                                         \
                                                                                                    \
 	DEVICE_DT_INST_DEFINE(inst, &notecard_init, NULL, NULL, &notecard_config_##inst,           \
 			      POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT, NULL);

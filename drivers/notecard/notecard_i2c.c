@@ -55,7 +55,7 @@ const char *notecard_i2c_receive(uint16_t device_address, uint8_t *buffer, uint1
 bool notecard_i2c_reset(uint16_t device_address)
 {
 	/* Nothing is needed here */
-	(void)device_address;
+	ARG_UNUSED(device_address);
 
 	return true;
 }
@@ -77,16 +77,16 @@ const char *notecard_i2c_transmit(uint16_t device_address, uint8_t *buffer, uint
 		       : "i2c: Unable to transmit data to the Notecard\n";
 }
 
-void notecard_i2c_attach_bus_api(const union notecard_bus *bus)
+void notecard_i2c_attach_bus_api(const struct notecard_bus *bus)
 {
-	i2c_dev = bus->i2c.bus;
+	i2c_dev = bus->dev.i2c.bus;
 
 	/* Not setting this to true will add a ton of delays into transmit code. */
 	NoteTurboIO(true);
 
 	/* Give note-c uart hooks.
 	 * Second argument tells note-c how large chunks can be send over i2c. */
-	NoteSetFnI2C(bus->i2c.addr, NOTE_I2C_MAX_MAX, notecard_i2c_reset, notecard_i2c_transmit,
+	NoteSetFnI2C(bus->dev.i2c.addr, NOTE_I2C_MAX_MAX, notecard_i2c_reset, notecard_i2c_transmit,
 		     notecard_i2c_receive);
 }
 

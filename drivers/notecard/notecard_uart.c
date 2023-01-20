@@ -88,9 +88,9 @@ static void noteSerialTransmit(uint8_t *text_, size_t len_, bool flush_)
 	}
 }
 
-void notecard_uart_attach_bus_api(const union notecard_bus *bus)
+void notecard_uart_attach_bus_api(const struct notecard_bus *bus)
 {
-	uart_dev = bus->uart;
+	uart_dev = bus->dev.uart;
 
 	/* Not setting this to true will add a ton of delays into transmit code. */
 	NoteTurboIO(true);
