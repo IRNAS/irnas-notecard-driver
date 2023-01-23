@@ -6,7 +6,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 
-project(notecard_over_uart)
+project(notecard_over_i2c)
 
 # We always want colored gcc output
 zephyr_compile_options(-fdiagnostics-color=always)
