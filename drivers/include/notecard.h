@@ -45,6 +45,15 @@ extern "C" {
 #endif
 
 #include <zephyr/device.h>
+
+/**
+ * @brief Typedef for attention pin callback
+ *
+ * @param[in] dev	Device struct of notecard driver instance for which the attn pin fired.
+ * @param[in] user_data	Arbitary data that was passed to notecard_attn_cb_register() call.
+ */
+typedef void (*attn_cb_t)(const struct device *dev, void *user_data);
+
 /**
  * @brief Take control with the notecard device
  *
@@ -52,18 +61,29 @@ extern "C" {
  * notecard.
  *
  * If another notecard device tries to take control, this function will block until the first
- * notecard releses control.
+ * notecard releases control.
  *
- * @param[in] device
+ * @param[in] dev	Device struct of notecard driver instance.
  */
-void notecard_ctrl_take(const struct device *device);
+void notecard_ctrl_take(const struct device *dev);
 
 /**
  * @brief Release control from notecard device
  *
- * @param[in] device
+ * @param[in] dev	Device struct of notecard driver instance.
  */
-void notecard_ctrl_release(const struct device *device);
+void notecard_ctrl_release(const struct device *dev);
+
+/**
+ * @brief Enable interrupt on attn pin and register an application callback
+ *
+ * Each notecard device can register only a single application callback.
+ *
+ * @param[in] dev	Device struct of notecard driver instance.
+ * @param[in] callback	Callback that will be called on when attn pin fires (goes to active state).
+ * @param[in] user_data Arbitary data to pass to the callback.
+ */
+void notecard_attn_cb_register(const struct device *dev, attn_cb_t callback, void *user_data);
 
 #ifdef __cplusplus
 }

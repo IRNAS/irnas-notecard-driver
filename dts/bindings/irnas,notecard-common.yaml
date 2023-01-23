@@ -2,7 +2,7 @@
 # Author: Marko Sagadin <marko@irnas.eu>
 
 properties:
-  attn_p_gpios:
+  attn-p-gpios:
     type: phandle-array
     required: false
     description: |

@@ -14,6 +14,8 @@
 extern "C" {
 #endif
 
+#include <notecard.h>
+
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/i2c.h>
 
@@ -46,8 +48,23 @@ extern void notecard_i2c_attach_bus_api(const struct notecard_bus *bus);
 
 struct notecard_config {
 	struct notecard_bus bus;
-	/* TODO: Some conditional thing is missing here */
 	struct gpio_dt_spec attn_p_gpio;
+	bool attn_gpio_in_use;
+};
+
+struct notecard_data {
+	/* Internal gpio_cb structure */
+	struct gpio_callback gpio_cb;
+	/* Callback that was registered with notecard_attn_cb_register(). */
+	attn_cb_t callback;
+	/* User data that was given with callback registration. */
+	void *user_data;
+	/* Pointer to the container device. */
+	const struct device *dev;
+
+	/* State of the attn pin at previous edge transition, needed to properly debounce
+	 * interrupts. */
+	int prev_attn_pin_state;
 };
 
 #ifdef __cplusplus
