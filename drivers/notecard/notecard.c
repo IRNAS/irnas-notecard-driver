@@ -8,8 +8,11 @@
 
 #include <notecard.h>
 
+#include <zephyr/devicetree.h>
+#include <zephyr/drivers/gpio.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/__assert.h>
 
 #include <note.h>
 
@@ -75,6 +78,70 @@ static void zephyr_free(void *mem)
 	k_heap_free(&notecard_heap, mem);
 }
 
+static void attn_pin_cb_handler(const struct device *port, struct gpio_callback *cb,
+				gpio_port_pins_t pins)
+{
+	struct notecard_data *data = CONTAINER_OF(cb, struct notecard_data, gpio_cb);
+	const struct device *dev = data->dev;
+	const struct notecard_config *config = dev->config;
+
+	/* Disable interrupt */
+	gpio_pin_interrupt_configure_dt(&config->attn_p_gpio, GPIO_INT_DISABLE);
+
+	int attn_pin_state = gpio_pin_get_dt(&config->attn_p_gpio);
+
+	/* Call callback only, if the state changed, attn pin state is high and callback was
+	 * given.*/
+	if (data->prev_attn_pin_state != attn_pin_state) {
+		data->prev_attn_pin_state = attn_pin_state;
+		if (attn_pin_state && data->callback) {
+			data->callback(dev, data->user_data);
+		}
+	}
+
+	/* "Re-enable back" interrupt, but for a different level */
+	gpio_pin_interrupt_configure_dt(&config->attn_p_gpio, data->prev_attn_pin_state
+								      ? GPIO_INT_LEVEL_INACTIVE
+								      : GPIO_INT_LEVEL_ACTIVE);
+}
+
+static int configure_attn_p_gpio(const struct device *dev)
+{
+	const struct notecard_config *config = dev->config;
+	struct notecard_data *data = dev->data;
+
+	/* Configure GPIO interrupt pin */
+	if (!device_is_ready(config->attn_p_gpio.port)) {
+		LOG_ERR("GPIO for attn_p_gpio not ready");
+		return -ENODEV;
+	}
+
+	int rc = gpio_pin_configure_dt(&config->attn_p_gpio, GPIO_INPUT);
+	if (rc) {
+		LOG_ERR("failed to configure attn_p_gpio pin %d (err=%d)", config->attn_p_gpio.pin,
+			rc);
+		return rc;
+	}
+
+	/* Prepare GPIO callback for interrupt pin */
+	gpio_init_callback(&data->gpio_cb, attn_pin_cb_handler, BIT(config->attn_p_gpio.pin));
+
+	rc = gpio_add_callback(config->attn_p_gpio.port, &data->gpio_cb);
+	if (rc) {
+		LOG_ERR("failed to add callback (err=%d)", rc);
+		return rc;
+	}
+
+	rc = gpio_pin_interrupt_configure_dt(&config->attn_p_gpio, GPIO_INT_LEVEL_ACTIVE);
+	if (rc) {
+		LOG_ERR("failed to configure attn_p_gpio pin %d as interrupt (err=%d)",
+			config->attn_p_gpio.pin, rc);
+		return rc;
+	}
+
+	return 0;
+}
+
 static int notecard_init(const struct device *dev)
 {
 	k_heap_init(&notecard_heap, notecard_heap_memory, CONFIG_NOTECARD_HEAP_SIZE);
@@ -84,7 +151,16 @@ static int notecard_init(const struct device *dev)
 
 	/* Set platform specific hooks. */
 	NoteSetFn(zephyr_malloc, zephyr_free, zephyr_delay, zephyr_millis);
-	return 0;
+
+	struct notecard_data *data = dev->data;
+	const struct notecard_config *config = dev->config;
+
+	/* Dev is later required in notecard_delayed_work_handler and attn_pin_cb_handler, cause it
+	 * can not be fetched with CONTAINTER_OF macro. */
+	data->dev = dev;
+
+	/* Configure interrupt pin */
+	return config->attn_gpio_in_use ? configure_attn_p_gpio(dev) : 0;
 }
 
 void notecard_ctrl_take(const struct device *dev)
@@ -99,6 +175,21 @@ void notecard_ctrl_release(const struct device *dev)
 {
 	k_mutex_unlock(&notecard_mutex);
 }
+
+void notecard_attn_cb_register(const struct device *dev, attn_cb_t callback, void *user_data)
+{
+	__ASSERT(callback, "Callback pointer needs to be provided");
+	const struct notecard_config *config = dev->config;
+	__ASSERT(config->attn_gpio_in_use, "attn-p-gpio was not provided in dts");
+	ARG_UNUSED(config);
+
+	/* Set callback and user data */
+	struct notecard_data *data = dev->data;
+	data->callback = callback;
+	data->user_data = user_data;
+}
+
+#define DT_DRV_COMPAT irnas_notecard
 
 #define NOTECARD_CONFIG_UART(inst)                                                                 \
 	{                                                                                          \
@@ -116,12 +207,15 @@ void notecard_ctrl_release(const struct device *dev)
 	static const struct notecard_config notecard_config_##inst = {                             \
 		.bus = COND_CODE_1(DT_INST_ON_BUS(inst, uart), (NOTECARD_CONFIG_UART(inst)),       \
 				   (NOTECARD_CONFIG_I2C(inst))),                                   \
-		IF_ENABLED(DT_INST_NODE_HAS_PROP(inst, attn_p_gpios),                              \
-			   (.attn_p_gpio = DT_INST_PROP(N, attn_p_gpios), ))                       \
+		.attn_p_gpio = GPIO_DT_SPEC_INST_GET_OR(inst, attn_p_gpios, {}),                   \
+		.attn_gpio_in_use = DT_INST_NODE_HAS_PROP(inst, attn_p_gpios)                      \
                                                                                                    \
 	};                                                                                         \
                                                                                                    \
-	DEVICE_DT_INST_DEFINE(inst, &notecard_init, NULL, NULL, &notecard_config_##inst,           \
-			      POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEFAULT, NULL);
+	static struct notecard_data notecard_data_##inst;                                          \
+                                                                                                   \
+	DEVICE_DT_INST_DEFINE(inst, &notecard_init, NULL, &notecard_data_##inst,                   \
+			      &notecard_config_##inst, POST_KERNEL,                                \
+			      CONFIG_KERNEL_INIT_PRIORITY_DEFAULT, NULL);
 
 DT_INST_FOREACH_STATUS_OKAY(NOTECARD_DEFINE);
