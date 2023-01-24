@@ -40,10 +40,10 @@ For i2c communication:
 
 ```yaml
 &i2c0 {
-	notecard: notecard@17 {
-		compatible = "irnas,notecard";
-		reg = <0x17>;
-	};
+    notecard: notecard@17 {
+        compatible = "irnas,notecard";
+        reg = <0x17>;
+    };
 };
 ```
 
@@ -51,15 +51,15 @@ For uart communication:
 
 ```yaml
 &uart0 {
-	compatible = "nordic,nrf-uarte";
-	current-speed = <115200>;
-	pinctrl-0 = <&uart0_default>;
-	pinctrl-1 = <&uart0_sleep>;
-	pinctrl-names = "default", "sleep";
+    compatible = "nordic,nrf-uarte";
+    current-speed = <115200>;
+    pinctrl-0 = <&uart0_default>;
+    pinctrl-1 = <&uart0_sleep>;
+    pinctrl-names = "default", "sleep";
 
-	notecard: notecard {
-		compatible = "irnas,notecard";
-	};
+    notecard: notecard {
+        compatible = "irnas,notecard";
+    };
 };
 ```
 
