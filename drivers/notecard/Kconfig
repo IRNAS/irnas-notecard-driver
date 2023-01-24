@@ -1,7 +1,9 @@
 menuconfig NOTECARD
-	bool "Blues NoteCard driver"
+	bool "Blues Notecard driver"
+	default y
+	depends on DT_HAS_BLUES_NOTECARD_ENABLED
 	help
-        None
+        Enable driver for Notecard
 
 if NOTECARD
 

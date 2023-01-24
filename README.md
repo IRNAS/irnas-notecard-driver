@@ -62,3 +62,10 @@ For uart communication:
 	};
 };
 ```
+
+### Kconfig
+
+No extra Kconfig options need to be enabled to use this driver, adding above
+snippet in device tree is enough. Check the
+[`driver/notecard/Kconfig`](./driver/notecard/Kconfig) file for other available
+Kconfig options.
