@@ -215,7 +215,7 @@ void notecard_attn_cb_register(const struct device *dev, attn_cb_t callback, voi
 	static struct notecard_data notecard_data_##inst;                                          \
                                                                                                    \
 	DEVICE_DT_INST_DEFINE(inst, &notecard_init, NULL, &notecard_data_##inst,                   \
-			      &notecard_config_##inst, POST_KERNEL,                                \
-			      CONFIG_KERNEL_INIT_PRIORITY_DEFAULT, NULL);
+			      &notecard_config_##inst, POST_KERNEL, CONFIG_NOTECARD_INIT_PRIORITY, \
+			      NULL);
 
 DT_INST_FOREACH_STATUS_OKAY(NOTECARD_DEFINE);

@@ -6,8 +6,15 @@ menuconfig NOTECARD
 if NOTECARD
 
 config NOTECARD_HEAP_SIZE
-	int "heap buffer size"
+	int "Heap buffer size"
     default 4096
 	help
         Controls the size of static heap, used by note-c library.
+
+config NOTECARD_INIT_PRIORITY
+	int "Init priority"
+	default 70
+	help
+	  Device driver initialization priority.
+
 endif
