@@ -189,7 +189,7 @@ void notecard_attn_cb_register(const struct device *dev, attn_cb_t callback, voi
 	data->user_data = user_data;
 }
 
-#define DT_DRV_COMPAT irnas_notecard
+#define DT_DRV_COMPAT blues_notecard
 
 #define NOTECARD_CONFIG_UART(inst)                                                                 \
 	{                                                                                          \

@@ -1,9 +1,0 @@
-# COPYRIGHT NOTICE: (c) 2022 Irnas. All rights reserved.
-# Author: Marko Sagadin <marko@irnas.eu>
-
-description: |
-  IRNAS implementation of driver for Blues Wireless' Notecard communication modules accessed through UART bus
-
-compatible: "irnas,notecard"
-
-include: ["uart-device.yaml", "irnas,notecard-common.yaml"]

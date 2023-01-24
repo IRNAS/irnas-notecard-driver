@@ -29,7 +29,7 @@
 
 &i2c0 {
 	notecard: notecard@17 {
-		compatible = "irnas,notecard";
+		compatible = "blues,notecard";
 		reg = <0x17>;
 		attn-p-gpios = <&gpio1 14 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN) >;
 	};

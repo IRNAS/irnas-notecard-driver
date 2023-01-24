@@ -1,0 +1,9 @@
+# COPYRIGHT NOTICE: (c) 2022 Irnas. All rights reserved.
+# Author: Marko Sagadin <marko@irnas.eu>
+
+description: |
+  Implementation of driver for Blues Wireless' Notecard communication modules accessed through I2C bus
+
+compatible: "blues,notecard"
+
+include: ["i2c-device.yaml", "blues,notecard-common.yaml"]

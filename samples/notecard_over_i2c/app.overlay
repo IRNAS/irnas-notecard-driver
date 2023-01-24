@@ -29,7 +29,7 @@
 
 &i2c0 {
 	notecard: notecard@17 {
-		compatible = "irnas,notecard";
+		compatible = "blues,notecard";
 		reg = <0x17>;
 	};
 };

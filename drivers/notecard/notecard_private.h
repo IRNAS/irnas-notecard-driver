@@ -19,8 +19,7 @@ extern "C" {
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/i2c.h>
 
-#define DT_DRV_COMPAT irnas_notecard
-
+#define DT_DRV_COMPAT	  blues_notecard
 #define NOTECARD_BUS_UART DT_ANY_INST_ON_BUS_STATUS_OKAY(uart)
 #define NOTECARD_BUS_I2C  DT_ANY_INST_ON_BUS_STATUS_OKAY(i2c)
 
