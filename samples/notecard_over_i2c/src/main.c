@@ -26,7 +26,13 @@ void main(void)
 	/* Create a request */
 	while (1) {
 		notecard_ctrl_take(notecard_dev);
-		J *req = NoteNewRequest("card.version");
+		J *req = NoteNewRequest("card.aux");
+		JAddStringToObject(req, "mode", "gpio");
+
+		const char *aux_pins_usage[] = {"off", "off", "off", "off"};
+		J *str_arr = JCreateStringArray(aux_pins_usage, 4);
+		JAddItemToObject(req, "usage", str_arr);
+
 		J *rsp = NoteRequestResponse(req);
 		char *rsp_str = JPrint(rsp);
 		if (rsp) {

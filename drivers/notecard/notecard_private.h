@@ -51,13 +51,22 @@ struct notecard_config {
 	bool attn_gpio_in_use;
 };
 
+struct notecard_callback_data {
+	/* Callback that was registered with notecard_*_cb_register() function. */
+	notecard_cb_t cb;
+	/* User data that was given with notecard_*_cb_register(). */
+	void *user_data;
+};
+
 struct notecard_data {
 	/* Internal gpio_cb structure */
 	struct gpio_callback gpio_cb;
-	/* Callback that was registered with notecard_attn_cb_register(). */
-	attn_cb_t callback;
-	/* User data that was given with callback registration. */
-	void *user_data;
+
+	/* Callback data structs from notecard_*_cb_register() functions. */
+	struct notecard_callback_data attn_cb_data;
+	struct notecard_callback_data post_take_cb_data;
+	struct notecard_callback_data pre_release_cb_data;
+
 	/* Pointer to the container device. */
 	const struct device *dev;
 

@@ -94,8 +94,8 @@ static void attn_pin_cb_handler(const struct device *port, struct gpio_callback 
 	 * given.*/
 	if (data->prev_attn_pin_state != attn_pin_state) {
 		data->prev_attn_pin_state = attn_pin_state;
-		if (attn_pin_state && data->callback) {
-			data->callback(dev, data->user_data);
+		if (attn_pin_state && data->attn_cb_data.cb) {
+			data->attn_cb_data.cb(dev, data->attn_cb_data.user_data);
 		}
 	}
 
@@ -166,6 +166,11 @@ static int notecard_init(const struct device *dev)
 void notecard_ctrl_take(const struct device *dev)
 {
 	k_mutex_lock(&notecard_mutex, K_FOREVER);
+	struct notecard_data *data = dev->data;
+
+	if (data->post_take_cb_data.cb) {
+		data->post_take_cb_data.cb(dev, data->post_take_cb_data.user_data);
+	}
 
 	const struct notecard_config *config = dev->config;
 	config->bus.attach_bus_api(&config->bus);
@@ -176,17 +181,43 @@ void notecard_ctrl_release(const struct device *dev)
 	k_mutex_unlock(&notecard_mutex);
 }
 
-void notecard_attn_cb_register(const struct device *dev, attn_cb_t callback, void *user_data)
+void notecard_attn_cb_register(const struct device *dev, notecard_cb_t attn_cb, void *user_data)
 {
-	__ASSERT(callback, "Callback pointer needs to be provided");
+	__ASSERT(attn_cb, "Callback pointer needs to be provided");
+
 	const struct notecard_config *config = dev->config;
 	__ASSERT(config->attn_gpio_in_use, "attn-p-gpio was not provided in dts");
 	ARG_UNUSED(config);
 
 	/* Set callback and user data */
 	struct notecard_data *data = dev->data;
-	data->callback = callback;
-	data->user_data = user_data;
+
+	data->attn_cb_data.cb = attn_cb;
+	data->attn_cb_data.user_data = user_data;
+}
+
+void notecard_post_take_cb_register(const struct device *dev, notecard_cb_t post_take_cb,
+				    void *user_data)
+{
+	__ASSERT(post_take_cb, "Callback pointer needs to be provided");
+
+	/* Set callback and user data */
+	struct notecard_data *data = dev->data;
+
+	data->post_take_cb_data.cb = post_take_cb;
+	data->post_take_cb_data.user_data = user_data;
+}
+
+void notecard_pre_release_cb_register(const struct device *dev, notecard_cb_t pre_release_cb,
+				      void *user_data)
+{
+	__ASSERT(pre_release_cb, "Callback pointer needs to be provided");
+
+	/* Set callback and user data */
+	struct notecard_data *data = dev->data;
+
+	data->pre_release_cb_data.cb = pre_release_cb;
+	data->pre_release_cb_data.user_data = user_data;
 }
 
 #define DT_DRV_COMPAT blues_notecard

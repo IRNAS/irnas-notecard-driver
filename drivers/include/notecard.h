@@ -32,6 +32,7 @@
  *	- NoteRequestWithRetry
  *	- NoteRequestResponse
  *	- NoteRequestResponseWithRetry
+ *
  * @par
  * COPYRIGHT NOTICE: (c) 2022 Irnas. All rights reserved.
  * Author: Marko Sagadin <marko@irnas.eu>
@@ -47,12 +48,12 @@ extern "C" {
 #include <zephyr/device.h>
 
 /**
- * @brief Typedef for attention pin callback
+ * @brief Typedef for a generic notecard callback
  *
- * @param[in] dev	Device struct of notecard driver instance for which the attn pin fired.
- * @param[in] user_data	Arbitary data that was passed to notecard_attn_cb_register() call.
+ * @param[in] dev	Device struct of the notecard driver instance related to the callback.
+ * @param[in] user_data	Arbitary data that was passed to notecard_*_cb_register() call.
  */
-typedef void (*attn_cb_t)(const struct device *dev, void *user_data);
+typedef void (*notecard_cb_t)(const struct device *dev, void *user_data);
 
 /**
  * @brief Take control with the notecard device
@@ -75,15 +76,47 @@ void notecard_ctrl_take(const struct device *dev);
 void notecard_ctrl_release(const struct device *dev);
 
 /**
- * @brief Enable interrupt on attn pin and register an application callback
+ * @brief Enable interrupt on attn pin and register an attn pin callback.
  *
- * Each notecard device can register only a single application callback.
+ * Each notecard device can register only a single attn pin callback.
  *
- * @param[in] dev	Device struct of notecard driver instance.
- * @param[in] callback	Callback that will be called on when attn pin fires (goes to active state).
- * @param[in] user_data Arbitary data to pass to the callback.
+ * Attn pin callback is called when attn pin fires (goes to active state).
+ *
+ * @param[in] dev		Device struct of notecard driver instance.
+ * @param[in] attn_cb		Attn pin callback.
+ * @param[in] user_data		Arbitary data that is passed to the callback.
  */
-void notecard_attn_cb_register(const struct device *dev, attn_cb_t callback, void *user_data);
+void notecard_attn_cb_register(const struct device *dev, notecard_cb_t attn_cb, void *user_data);
+
+/**
+ * @brief Register an post take callback.
+ *
+ * Each notecard device can register only a single post take callback.
+ *
+ * Post take callback is called inside of the notecard_ctrl_take function, after the notercard
+ * device takes control.
+ *
+ * @param[in] dev		Device struct of notecard driver instance.
+ * @param[in] post_take_cb	Post take callback.
+ * @param[in] user_data		Arbitary data that is passed to the callback.
+ */
+void notecard_post_take_cb_register(const struct device *dev, notecard_cb_t post_take_cb,
+				    void *user_data);
+
+/**
+ * @brief Register an pre release callback.
+ *
+ * Each notecard device can register only a single pre release callback.
+ *
+ * Pre release callback is called inside of the notecard_ctrl_take function, after the notercard
+ * device takes control.
+ *
+ * @param[in] dev		Device struct of notecard driver instance.
+ * @param[in] pre_release_cb	Pre release callback.
+ * @param[in] user_data		Arbitary data that is passed to the callback.
+ */
+void notecard_pre_release_cb_register(const struct device *dev, notecard_cb_t pre_release_cb,
+				      void *user_data);
 
 #ifdef __cplusplus
 }
