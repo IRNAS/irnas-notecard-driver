@@ -178,6 +178,12 @@ void notecard_ctrl_take(const struct device *dev)
 
 void notecard_ctrl_release(const struct device *dev)
 {
+	struct notecard_data *data = dev->data;
+
+	if (data->pre_release_cb_data.cb) {
+		data->pre_release_cb_data.cb(dev, data->pre_release_cb_data.user_data);
+	}
+
 	k_mutex_unlock(&notecard_mutex);
 }
 
