@@ -19,4 +19,8 @@ config NOTECARD_INIT_PRIORITY
 	help
 	  Device driver initialization priority.
 
+module = NOTECARD
+module-str = notecard
+source "subsys/logging/Kconfig.template.log_config"
+
 endif

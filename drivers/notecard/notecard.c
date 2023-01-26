@@ -18,7 +18,7 @@
 
 #include <stdlib.h>
 
-LOG_MODULE_REGISTER(note);
+LOG_MODULE_REGISTER(note, CONFIG_NOTECARD_LOG_LEVEL);
 
 static uint8_t notecard_heap_memory[CONFIG_NOTECARD_HEAP_SIZE];
 static struct k_heap notecard_heap;
@@ -50,7 +50,7 @@ static uint32_t zephyr_millis(void)
 static size_t zephyr_log_print(const char *message)
 {
 	if (message) {
-		LOG_INF("%s", message);
+		LOG_DBG("%s", message);
 		return 1;
 	}
 
