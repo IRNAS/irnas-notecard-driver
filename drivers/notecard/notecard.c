@@ -46,12 +46,29 @@ static uint32_t zephyr_millis(void)
 
 /**
  * @brief Zephyr-specific `log print` function required by the note-c lib.
+ *
+ * Below logic cleans up the message by removing trailing whitespace characters before printing.
  */
 static size_t zephyr_log_print(const char *message)
 {
-	if (message) {
-		LOG_DBG("%s", message);
-		return 1;
+	char cleaned_msg[256];
+
+	if (strlen(message) > 256) {
+		LOG_DBG("Message too long, skipping logging");
+		return 0;
+	}
+
+	char const *end = message;
+
+	while (!(*end == '\0' || *end == '\r')) {
+		end++;
+	}
+
+	strncpy(cleaned_msg, message, end - message);
+	cleaned_msg[end - message] = '\0';
+
+	if (strlen(cleaned_msg) > 0) {
+		LOG_DBG("%s", cleaned_msg);
 	}
 
 	return 0;
