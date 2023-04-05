@@ -204,6 +204,43 @@ void notecard_ctrl_release(const struct device *dev)
 	k_mutex_unlock(&notecard_mutex);
 }
 
+size_t notecard_available_memory(void)
+{
+	struct object_header {
+		struct object_header *prev;
+		size_t length;
+	};
+
+	/*  Allocate progressively smaller and smaller chunks */
+	struct object_header *prev_obj = NULL;
+	static long int max_size = 8192;
+	for (long int i = max_size; i >= (long int)sizeof(struct object_header);
+	     i = i - sizeof(struct object_header)) {
+
+		while (1) {
+			struct object_header *obj;
+			obj = k_heap_alloc(&notecard_heap, i, K_NO_WAIT);
+			if (obj == NULL) {
+				break;
+			}
+			obj->prev = prev_obj;
+			obj->length = i;
+			prev_obj = obj;
+		}
+	}
+
+	/* Free the objects backwards */
+	size_t total = 0;
+	while (prev_obj != NULL) {
+		struct object_header *obj = prev_obj;
+		prev_obj = obj->prev;
+		total += obj->length;
+		k_heap_free(&notecard_heap, obj);
+	}
+
+	return total;
+}
+
 void notecard_attn_cb_register(const struct device *dev, notecard_cb_t attn_cb, void *user_data)
 {
 	__ASSERT(attn_cb, "Callback pointer needs to be provided");

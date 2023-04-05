@@ -76,6 +76,19 @@ void notecard_ctrl_take(const struct device *dev);
 void notecard_ctrl_release(const struct device *dev);
 
 /**
+ * @brief Obtain the amount of free memory available on the Notecard.
+ *
+ * The "free memory" refers to the internal heap memory that can be set with
+ * CONFIG_NOTECARD_HEAP_SIZE Kconfig option.
+ *
+ * @note This function way copied from note-c library and refactored. That way we avoid spamming the
+ * logs with "no memory" messages that the NoteMemAvailable would trigger otherwise.
+ *
+ * @return Available memory in bytes.
+ */
+size_t notecard_available_memory(void);
+
+/**
  * @brief Enable interrupt on attn pin and register an attn pin callback.
  *
  * Each notecard device can register only a single attn pin callback.
