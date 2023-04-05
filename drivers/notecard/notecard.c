@@ -62,7 +62,7 @@ static size_t zephyr_log_print(const char *message)
  */
 static void *zephyr_malloc(size_t size)
 {
-	void *ptr = k_heap_alloc(&notecard_heap, size, K_FOREVER);
+	void *ptr = k_heap_alloc(&notecard_heap, size, K_NO_WAIT);
 	if (!ptr) {
 		LOG_ERR("Memory allocation failed!");
 	}
