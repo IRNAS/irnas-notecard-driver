@@ -6,11 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [1.0.0] - 2023-04-06
+
 ## Added
 
-- Basic Notecard driver support over I2C and UART
-- Two basic samples, one for the each of the communication busses, that request
-  version string from notecard.
-- Interrupt support for `ATTN_P` pin.
-- Add function for determining available heap memory used by notecard driver.
-- Print logs now remove trailing whitespace, so everything looks nice.
+-   Basic Notecard driver support over I2C and UART
+-   Two basic samples, one for the each of the communication busses, that request
+    version string from notecard.
+-   Interrupt support for `ATTN_P` pin.
+-   Add function for determining available heap memory used by notecard driver.
+-   Print logs now remove trailing whitespace, so everything looks nice.
+
+[Unreleased]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.0.0...HEAD
+
+[1.0.0]: https://github.com/IRNAS/irnas-notecard-driver/compare/6a5696d6b4d6f8aaa269a625594a3d7e93eccd55...v1.0.0
