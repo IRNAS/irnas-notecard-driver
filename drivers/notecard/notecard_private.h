@@ -69,10 +69,6 @@ struct notecard_data {
 
 	/* Pointer to the container device. */
 	const struct device *dev;
-
-	/* State of the attn pin at previous edge transition, needed to properly debounce
-	 * interrupts. */
-	int prev_attn_pin_state;
 };
 
 #ifdef __cplusplus
