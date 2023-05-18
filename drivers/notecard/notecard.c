@@ -109,54 +109,52 @@ static void attn_pin_cb_handler(const struct device *port, struct gpio_callback 
 
 	/* Call callback only, if the state changed, attn pin state is high and callback was
 	 * given.*/
-	if (data->prev_attn_pin_state != attn_pin_state) {
-		data->prev_attn_pin_state = attn_pin_state;
-		if (attn_pin_state && data->attn_cb_data.cb) {
-			data->attn_cb_data.cb(dev, data->attn_cb_data.user_data);
-		}
+	if (attn_pin_state && data->attn_cb_data.cb) {
+		data->attn_cb_data.cb(dev, data->attn_cb_data.user_data);
 	}
 
 	/* "Re-enable back" interrupt, but for a different level */
-	gpio_pin_interrupt_configure_dt(&config->attn_p_gpio, data->prev_attn_pin_state
+	gpio_pin_interrupt_configure_dt(&config->attn_p_gpio, attn_pin_state
 								      ? GPIO_INT_LEVEL_INACTIVE
 								      : GPIO_INT_LEVEL_ACTIVE);
 }
 
-static int configure_attn_p_gpio(const struct device *dev)
+static int prv_configure_interrupt_gpio(struct gpio_callback *gpio_cb,
+					const struct gpio_dt_spec *gpio)
 {
-	const struct notecard_config *config = dev->config;
-	struct notecard_data *data = dev->data;
-
+	int rc;
 	/* Configure GPIO interrupt pin */
-	if (!device_is_ready(config->attn_p_gpio.port)) {
-		LOG_ERR("GPIO for attn_p_gpio not ready");
+	if (!device_is_ready(gpio->port)) {
+		LOG_ERR("attn_p_gpio is not ready");
 		return -ENODEV;
 	}
 
-	int rc = gpio_pin_configure_dt(&config->attn_p_gpio, GPIO_INPUT);
+	rc = gpio_pin_configure_dt(gpio, GPIO_INPUT);
 	if (rc) {
-		LOG_ERR("failed to configure attn_p_gpio pin %d (err=%d)", config->attn_p_gpio.pin,
-			rc);
+		LOG_ERR("failed to configure attn_p_gpio pin %d (err=%d)", gpio->pin, rc);
 		return rc;
 	}
 
 	/* Prepare GPIO callback for interrupt pin */
-	gpio_init_callback(&data->gpio_cb, attn_pin_cb_handler, BIT(config->attn_p_gpio.pin));
+	gpio_init_callback(gpio_cb, attn_pin_cb_handler, BIT(gpio->pin));
 
-	rc = gpio_add_callback(config->attn_p_gpio.port, &data->gpio_cb);
+	rc = gpio_add_callback(gpio->port, gpio_cb);
 	if (rc) {
 		LOG_ERR("failed to add callback (err=%d)", rc);
 		return rc;
 	}
+	/* Regardles to what the trigger is set, we do not want interrupt to fire at init, below
+	 * line ensures that. */
+	gpio_flags_t interrupt_type =
+		gpio_pin_get_dt(gpio) ? GPIO_INT_LEVEL_INACTIVE : GPIO_INT_LEVEL_ACTIVE;
 
-	rc = gpio_pin_interrupt_configure_dt(&config->attn_p_gpio, GPIO_INT_LEVEL_ACTIVE);
+	rc = gpio_pin_interrupt_configure_dt(gpio, interrupt_type);
 	if (rc) {
-		LOG_ERR("failed to configure attn_p_gpio pin %d as interrupt (err=%d)",
-			config->attn_p_gpio.pin, rc);
-		return rc;
+		LOG_ERR("failed to configure attn_p_gpio pin %d as interrupt (err=%d)", gpio->pin,
+			rc);
 	}
 
-	return 0;
+	return rc;
 }
 
 static int notecard_init(const struct device *dev)
@@ -176,8 +174,9 @@ static int notecard_init(const struct device *dev)
 	 * can not be fetched with CONTAINTER_OF macro. */
 	data->dev = dev;
 
-	/* Configure interrupt pin */
-	return config->attn_gpio_in_use ? configure_attn_p_gpio(dev) : 0;
+	return config->attn_gpio_in_use
+		       ? prv_configure_interrupt_gpio(&data->gpio_cb, &config->attn_p_gpio)
+		       : 0;
 }
 
 void notecard_ctrl_take(const struct device *dev)
