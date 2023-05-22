@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [1.0.2] - 2023-05-22
+
 ## Changed
 
 -   Long debug log messages are now not ignored, but printed, up to 255 
@@ -28,7 +30,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 -   Add function for determining available heap memory used by notecard driver.
 -   Print logs now remove trailing whitespace, so everything looks nice.
 
-[Unreleased]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.0.2...HEAD
+
+[1.0.2]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.0.1...v1.0.2
 
 [1.0.1]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.0.0...v1.0.1
 
