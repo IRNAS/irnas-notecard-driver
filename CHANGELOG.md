@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## Changed
+
+-   Long debug log messages are now not ignored, but printed, up to 255 
+    characters.
+
 ## [1.0.1] - 2023-05-18
 
 ## Fixed
