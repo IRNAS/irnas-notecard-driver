@@ -52,9 +52,25 @@ static uint32_t zephyr_millis(void)
 static size_t zephyr_log_print(const char *message)
 {
 	char cleaned_msg[256];
+	// size_t bytes_left = strlen(message);
+	// size_t chunk_size = 255;
+	// int i = 0;
+	// while (bytes_left) {
+	// 	/* Handle the case where the size of the image sent is not divisable with
+	// 	 * chunk_size.
+	// 	 */
+	// 	size_t bytes_to_send = bytes_left >= chunk_size ? chunk_size : bytes_left;
+	// 	strncpy(cleaned_msg, &message[i * chunk_size], bytes_to_send);
+	// 	cleaned_msg[bytes_to_send] = '\0';
+	// 	LOG_RAW("%s", cleaned_msg);
+	// 	bytes_left -= bytes_to_send;
+	// 	i++;
+	// }
 
 	if (strlen(message) > 256) {
-		LOG_DBG("Message too long, skipping logging");
+		strncpy(cleaned_msg, message, 256);
+		cleaned_msg[255] = '\0';
+		LOG_DBG("%s", cleaned_msg);
 		return 0;
 	}
 
