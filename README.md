@@ -26,7 +26,9 @@ To use add below two snippets into your project's west.yml file and run
     repo-path: irnas-notecard-driver
     path: irnas/irnas-notecard-driver
     remote: irnas
-    revision: v1.0.0
+    revision: v1.0.2
+    submodules: true
+
 ```
 
 ### Device tree
