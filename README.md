@@ -71,3 +71,17 @@ No extra Kconfig options need to be enabled to use this driver, adding above
 snippet in device tree is enough. Check the
 [`driver/notecard/Kconfig`](./driver/notecard/Kconfig) file for other available
 Kconfig options.
+
+
+### MCUBoot
+
+When using MCUBoot in the project you probably do not want to compile Notecard driver in the bootloader image.
+
+To acomplish this create `child_image` folder in your application folder. Inside it create file `mcuboot.conf` with below content:
+```
+# This Kconfig fragment is merged when building mcuboot image.
+
+# Explicitly disable some drivers, they are otherwise enabled implicitly
+# through dts.
+CONFIG_NOTECARD=n
+``` 
