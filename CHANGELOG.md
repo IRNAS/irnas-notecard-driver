@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+### Changed
+
+-   Switch to using Irnas's fork of note-c library so you are still using 
+    pre-non-turboIO logic, with shorter retryies.
+
 ## [1.1.0] - 2023-07-03
 
 ### Changed
