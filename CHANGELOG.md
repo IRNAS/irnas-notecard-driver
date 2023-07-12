@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [1.1.1] - 2023-07-12
+
 ### Changed
 
 -   Switch to using Irnas's fork of note-c library so you are still using 
@@ -46,7 +48,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 -   Add function for determining available heap memory used by notecard driver.
 -   Print logs now remove trailing whitespace, so everything looks nice.
 
-[Unreleased]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.1.1...HEAD
+
+[1.1.1]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.1.0...v1.1.1
 
 [1.1.0]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.0.2...v1.1.0
 
