@@ -6,22 +6,47 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [1.2.0] - 2023-07-27
+
+### Changed
+
+-   Update note-c submodule to v0.1.1 tag with longer 5 second retries which 
+    solve web.post issues.
+
+## [1.1.1] - 2023-07-12
+
+### Changed
+
+-   Switch to using Irnas's fork of note-c library so you are still using 
+    pre-non-turboIO logic, with shorter retryies.
+
+## [1.1.0] - 2023-07-03
+
+### Changed
+
+-   Update note-c sub-module library to the latest commit.
+
+### Fixed
+
+-   Stabilize I2C communication by adding 1ms delay before every i2c I/O 
+    transaction.
+
 ## [1.0.2] - 2023-05-22
 
-## Changed
+### Changed
 
 -   Long debug log messages are now not ignored, but printed, up to 255 
     characters.
 
 ## [1.0.1] - 2023-05-18
 
-## Fixed
+### Fixed
 
 -   Interrupt handling.
 
 ## [1.0.0] - 2023-04-06
 
-## Added
+### Added
 
 -   Basic Notecard driver support over I2C and UART
 -   Two basic samples, one for the each of the communication busses, that request
@@ -30,7 +55,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 -   Add function for determining available heap memory used by notecard driver.
 -   Print logs now remove trailing whitespace, so everything looks nice.
 
-[Unreleased]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.2.0...HEAD
+
+[1.2.0]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.1.1...v1.2.0
+
+[1.1.1]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.1.0...v1.1.1
+
+[1.1.0]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.0.2...v1.1.0
 
 [1.0.2]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.0.1...v1.0.2
 

@@ -4,7 +4,7 @@ This repository contains a Zephyr driver for Blues' Notecard modules.
 
 ## Important
 
-Please read the documentation in [notecard.h](./drivers/notecard/notecard.h) and
+Please read the documentation in [notecard.h](./drivers/include/notecard.h) and
 see how to use the API in the samples.
 
 ## Usage
@@ -26,7 +26,9 @@ To use add below two snippets into your project's west.yml file and run
     repo-path: irnas-notecard-driver
     path: irnas/irnas-notecard-driver
     remote: irnas
-    revision: v1.0.0
+    revision: v1.0.2
+    submodules: true
+
 ```
 
 ### Device tree
@@ -69,3 +71,17 @@ No extra Kconfig options need to be enabled to use this driver, adding above
 snippet in device tree is enough. Check the
 [`driver/notecard/Kconfig`](./driver/notecard/Kconfig) file for other available
 Kconfig options.
+
+
+### MCUBoot
+
+When using MCUBoot in the project you probably do not want to compile Notecard driver in the bootloader image.
+
+To acomplish this create `child_image` folder in your application folder. Inside it create file `mcuboot.conf` with below content:
+```
+# This Kconfig fragment is merged when building mcuboot image.
+
+# Explicitly disable some drivers, they are otherwise enabled implicitly
+# through dts.
+CONFIG_NOTECARD=n
+``` 
