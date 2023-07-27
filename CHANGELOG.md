@@ -6,12 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [1.2.0] - 2023-07-27
+
+### Changed
+
+-   Update note-c submodule to v0.1.1 tag with longer 5 second retries which 
+    solve web.post issues.
+
 ## [1.1.1] - 2023-07-12
 
 ### Changed
 
 -   Switch to using Irnas's fork of note-c library so you are still using 
-    pre-non-turboIO logic, with shorter retryies.
+    pre-non-turboIO logic, with shorter retries.
 
 ## [1.1.0] - 2023-07-03
 
@@ -48,7 +55,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 -   Add function for determining available heap memory used by notecard driver.
 -   Print logs now remove trailing whitespace, so everything looks nice.
 
-[Unreleased]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.2.0...HEAD
+
+[1.2.0]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.1.1...v1.2.0
 
 [1.1.1]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.1.0...v1.1.1
 
