@@ -6,12 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+### Changed
+
+-   Update note-c submodule to v0.1.1 tag with longer 5 second retries which 
+    solve web.post issues.
+
 ## [1.1.1] - 2023-07-12
 
 ### Changed
 
 -   Switch to using Irnas's fork of note-c library so you are still using 
-    pre-non-turboIO logic, with shorter retryies.
+    pre-non-turboIO logic, with shorter retries.
 
 ## [1.1.0] - 2023-07-03
 
