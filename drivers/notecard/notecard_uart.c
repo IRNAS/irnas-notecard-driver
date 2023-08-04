@@ -92,9 +92,6 @@ void notecard_uart_attach_bus_api(const struct notecard_bus *bus)
 {
 	uart_dev = bus->dev.uart;
 
-	/* Not setting this to true will add a ton of delays into transmit code. */
-	NoteTurboIO(true);
-
 	/* Give note-c uart hooks. */
 	NoteSetFnSerial(notecard_uart_reset, noteSerialTransmit, notecard_rx_available,
 			notecard_rx);
