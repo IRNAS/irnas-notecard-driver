@@ -22,6 +22,17 @@ const struct device *notecard_dev = DEVICE_DT_GET(DT_NODELABEL(notecard));
 int main(void)
 {
 	LOG_INF("Booted");
+	k_msleep(1000);
+
+	notecard_ctrl_take(notecard_dev);
+	bool present = notecard_is_present(notecard_dev);
+	if (!present) {
+		LOG_ERR("Notecard not present, stopping sample.");
+		return 0;
+	}
+
+	LOG_INF("Notecard is present!");
+	notecard_ctrl_release(notecard_dev);
 
 	/* Create a request */
 	while (1) {
