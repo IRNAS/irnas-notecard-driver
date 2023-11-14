@@ -78,7 +78,7 @@ static bool notecard_uart_reset(void)
 
 static void noteSerialTransmit(uint8_t *text_, size_t len_, bool flush_)
 {
-	ARG_UNUSED(flush_); // `uart_poll_out` blocks (i.e. always flushes)
+	ARG_UNUSED(flush_); /* `uart_poll_out` blocks (i.e. always flushes) */
 
 	for (size_t i = 0; i < len_; ++i) {
 		uart_poll_out(uart_dev, text_[i]);
