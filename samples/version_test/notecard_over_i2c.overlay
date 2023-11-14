@@ -1,0 +1,6 @@
+&i2c0 {
+	notecard: notecard@17 {
+		compatible = "blues,notecard";
+		reg = <0x17>;
+	};
+};
