@@ -131,6 +131,21 @@ void notecard_post_take_cb_register(const struct device *dev, notecard_cb_t post
 void notecard_pre_release_cb_register(const struct device *dev, notecard_cb_t pre_release_cb,
 				      void *user_data);
 
+/**
+ * @brief Check if notecard is present.
+ *
+ * Notecard is considered present, if it responds back to the request.
+ *
+ *
+ * @note This function bypasses the entire note-c library and directly uses the correct
+ * communication bus via Zephyr API.
+ *
+ * @param[in] dev		Device struct of notecard driver instance.
+ *
+ * @return True if present, false otherwise.
+ */
+bool notecard_is_present(const struct device *dev);
+
 #ifdef __cplusplus
 }
 #endif
