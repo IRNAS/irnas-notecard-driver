@@ -10,8 +10,8 @@
 #include <note.h>
 
 #include <zephyr/device.h>
-#include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/logging/log_ctrl.h>
 
 #include <stdlib.h>
 
@@ -19,24 +19,36 @@ LOG_MODULE_REGISTER(main);
 
 const struct device *notecard_dev = DEVICE_DT_GET(DT_NODELABEL(notecard));
 
-void main(void)
+int main(void)
 {
 	LOG_INF("Booted");
+	k_msleep(1000);
+
+	notecard_ctrl_take(notecard_dev);
+	bool present = notecard_is_present(notecard_dev);
+	if (!present) {
+		LOG_ERR("Notecard not present, stopping sample.");
+		return 0;
+	}
+
+	LOG_INF("Notecard is present!");
+	notecard_ctrl_release(notecard_dev);
 
 	/* Create a request */
 	while (1) {
 		notecard_ctrl_take(notecard_dev);
 		J *req = NoteNewRequest("card.version");
 		J *rsp = NoteRequestResponse(req);
-		char *rsp_str = JPrint(rsp);
 		if (rsp) {
+			char *rsp_str = JPrint(rsp);
 			LOG_INF("%s", rsp_str);
+			NoteFree(rsp_str);
+			NoteDeleteResponse(rsp);
 		} else {
 			LOG_INF("No response");
 		}
-		NoteDeleteResponse(rsp);
-		NoteFree(rsp_str);
+
 		notecard_ctrl_release(notecard_dev);
-		k_msleep(5000);
+		k_msleep(1000);
 	}
 }

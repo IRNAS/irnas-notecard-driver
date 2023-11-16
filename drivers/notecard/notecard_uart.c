@@ -78,7 +78,7 @@ static bool notecard_uart_reset(void)
 
 static void noteSerialTransmit(uint8_t *text_, size_t len_, bool flush_)
 {
-	ARG_UNUSED(flush_); // `uart_poll_out` blocks (i.e. always flushes)
+	ARG_UNUSED(flush_); /* `uart_poll_out` blocks (i.e. always flushes) */
 
 	for (size_t i = 0; i < len_; ++i) {
 		uart_poll_out(uart_dev, text_[i]);
@@ -91,9 +91,6 @@ static void noteSerialTransmit(uint8_t *text_, size_t len_, bool flush_)
 void notecard_uart_attach_bus_api(const struct notecard_bus *bus)
 {
 	uart_dev = bus->dev.uart;
-
-	/* Not setting this to true will add a ton of delays into transmit code. */
-	NoteTurboIO(true);
 
 	/* Give note-c uart hooks. */
 	NoteSetFnSerial(notecard_uart_reset, noteSerialTransmit, notecard_rx_available,

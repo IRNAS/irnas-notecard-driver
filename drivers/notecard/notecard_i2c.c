@@ -87,9 +87,6 @@ void notecard_i2c_attach_bus_api(const struct notecard_bus *bus)
 {
 	i2c_dev = bus->dev.i2c.bus;
 
-	/* Not setting this to true will add a ton of delays into transmit code. */
-	NoteTurboIO(true);
-
 	/* Give note-c uart hooks.
 	 * Second argument tells note-c how large chunks can be send over i2c. */
 	NoteSetFnI2C(bus->dev.i2c.addr, NOTE_I2C_MAX_MAX, notecard_i2c_reset, notecard_i2c_transmit,

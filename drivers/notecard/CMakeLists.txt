@@ -14,6 +14,7 @@ zephyr_library_sources(
   ${NOTE_C}/n_i2c.c
   ${NOTE_C}/n_md5.c
   ${NOTE_C}/n_printf.c
+  ${NOTE_C}/n_cobs.c
   ${NOTE_C}/n_request.c
   ${NOTE_C}/n_serial.c
   ${NOTE_C}/n_str.c

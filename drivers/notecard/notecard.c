@@ -10,8 +10,10 @@
 
 #include <zephyr/devicetree.h>
 #include <zephyr/drivers/gpio.h>
+#include <zephyr/drivers/uart.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/logging/log_ctrl.h>
 #include <zephyr/sys/__assert.h>
 
 #include <note.h>
@@ -293,6 +295,71 @@ void notecard_pre_release_cb_register(const struct device *dev, notecard_cb_t pr
 
 	data->pre_release_cb_data.cb = pre_release_cb;
 	data->pre_release_cb_data.user_data = user_data;
+}
+
+bool notecard_is_present(const struct device *dev)
+{
+	const struct notecard_config *config = dev->config;
+#if NOTECARD_BUS_UART
+	const struct device *uart = config->bus.dev.uart;
+	int rc;
+	char c;
+
+	/* Clean up any characters left in the uart buffer. */
+	while (!uart_poll_in(uart, &c)) {
+	}
+
+	char *req = "\r\n";
+	for (size_t i = 0; i < strlen(req); ++i) {
+		uart_poll_out(uart, req[i]);
+		/* 100 us delay is needed to prevent overwhelming the nrfx implementation of
+		 * uart_poll_out and entering 1ms sleep between each call. */
+		k_busy_wait(100);
+	}
+
+	/* Wait a bit */
+	k_sleep(K_MSEC(250));
+
+	/* Notecard should respond with the same two characters back. */
+	rc = uart_poll_in(uart, &c);
+	if (rc || c != '\r') {
+		/* No character arrived. */
+		return false;
+	}
+
+	rc = uart_poll_in(uart, &c);
+	if (rc || c != '\n') {
+		/* No character arrived. */
+		return false;
+	}
+
+	return true;
+#endif
+#if NOTECARD_BUS_I2C
+	const struct i2c_dt_spec *i2c = &config->bus.dev.i2c;
+
+	struct i2c_msg msgs[1];
+	uint8_t dst[2] = {0x00, 0x00};
+
+	/* Get the source id for i2c_nrfx_twi. */
+	int16_t source_id = log_source_id_get("i2c_nrfx_twi");
+
+	/* Disable logging for i2c_nrfx_twi, as we know that it will be noisy, if notecard
+	 * is missing. */
+	log_filter_set(NULL, 0, source_id, LOG_LEVEL_NONE);
+
+	/* Write some data to the notecard to see if you get back response. */
+	msgs[0].buf = dst;
+	msgs[0].len = 2U;
+	msgs[0].flags = I2C_MSG_WRITE | I2C_MSG_STOP;
+
+	bool present = i2c_transfer(i2c->bus, &msgs[0], 1, i2c->addr) == 0;
+
+	/* Enable back logging. Set the highest level possible, it will be limited by the
+	 * actual compiled in level. */
+	log_filter_set(NULL, 0, source_id, LOG_LEVEL_DBG);
+	return present;
+#endif
 }
 
 #define DT_DRV_COMPAT blues_notecard
