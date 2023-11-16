@@ -15,8 +15,10 @@ compile_commands.json
 **/build/*
 build/*
 build*
+!.github/workflows/build.yaml
 generated
-twister-out
+twister-out*
+release/
 
 # Python stuff
 __pycache__
@@ -31,7 +33,6 @@ develop-eggs/
 dist/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -43,3 +44,12 @@ share/python-wheels/
 
 #envrc
 .envrc
+
+# Renode and various other reports
+*.html
+*.xml
+logs/*
+snapshots
+
+# Codechecker stuff
+codechecker-diffs/*
