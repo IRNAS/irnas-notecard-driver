@@ -38,47 +38,17 @@ pre-build:
 
 # Runs on every push to the main branch
 quick-build:
-	east build -b nrf52840dk_nrf52840 app
+	east build -b nrf52840dk_nrf52840 samples/version_test -d build_i2c -- -DEXTRA_DTC_OVERLAY_FILE=notecard_over_i2c.overlay
 
 # Runs on every PR and when doing releases
 release:
-	# Change east.yml to control what is built.
-	east release
+	# Do not do anything, this is a driver project with some custom build steps which are not yet supported by the East
 
 # Pre-package target is only run in release process.
 pre-package:
 	mkdir -p artefacts
-	cp release/*.zip artefacts
 	cp scripts/pre_changelog.md artefacts
 	cp scripts/post_changelog.md artefacts
-
-test:
-	east twister -T tests --coverage -p native_posix
-
-test-report-ci:
-	junit2html twister-out/twister.xml twister-out/twister-report.html
-
-# Intended to be used by developer, use 'pip install junit2html' to install
-# tooling
-test-report: test-report-ci
-	firefox twister-out/twister-report.html
-
-# Twister's coverage report by default includes all Zephyr sources, which is not
-# what we want. Below coverage-report-ci target removes all Zephyr sources from
-# coverage.info and generates a new coverage report.
-REMOVE_DIR = $(shell realpath $(shell pwd)/../zephyr)
-
-# This target is used in CI. It differs from coverage-report target in that it
-# removes "project/" from the paths in coverage.info, so that the GitHub action
-# that makes the coverage report can create proper links to the source files.
-coverage-report-ci:
-	rm -fr twister-out/coverage
-	lcov -q --remove twister-out/coverage.info "${REMOVE_DIR}/*" -o twister-out/coverage.info  --rc lcov_branch_coverage=1
-
-# Intended to be used by developer
-coverage-report: coverage-report-ci
-	genhtml -q --output-directory twister-out/coverage --ignore-errors source --branch-coverage --highlight --legend twister-out/coverage.info
-	firefox twister-out/coverage/index.html
 
 # CodeChecker section
 # build and check targets are run on every push to the `main` and in PRs.
@@ -88,19 +58,15 @@ coverage-report: coverage-report-ci
 # Important: If building more projects, make sure to create separate build
 # directories with -d flag, so they can be analyzed separately, see examples
 # below.
-codechecker-build:
-	east build -b nrf52840dk_nrf52840 app -d build_app
-	east build -b nrf52840dk_nrf52840 app -u debug -d build_debug
+codechecker-build: quick-build
 
 codechecker-check:
-	east codechecker check -d build_app
-	east codechecker check -d build_debug
+	east codechecker check -d build_i2c
 
 codechecker-store:
-	east codechecker store -d build_app
-	east codechecker store -d build_debug
+	east codechecker store  -d build_i2c
 
 # Specify build folders that you want to analyze to the script as positional 
 # arguments, open it to learn more.
 codechecker-diff:
-	scripts/codechecker-diff.sh build_app build_debug
+	scripts/codechecker-diff.sh build_i2c
