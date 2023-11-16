@@ -64,7 +64,7 @@ codechecker-check:
 	east codechecker check -d build_i2c
 
 codechecker-store:
-	east codechecker store  -d build_i2c
+	east codechecker store -d build_i2c
 
 # Specify build folders that you want to analyze to the script as positional 
 # arguments, open it to learn more.
