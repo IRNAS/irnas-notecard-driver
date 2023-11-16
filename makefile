@@ -38,7 +38,7 @@ pre-build:
 
 # Runs on every push to the main branch
 quick-build:
-	east build -b nrf52840dk_nrf52840 samples/version_test -d build_i2c -- -DEXTRA_DTC_OVERLAY_FILE=notecard_over_i2c.overlay
+	east build -b nrf52840dk_nrf52840 samples/version_test -d build_i2c -- -DDTC_OVERLAY_FILE=notecard_over_i2c.overlay
 
 # Runs on every PR and when doing releases
 release:
