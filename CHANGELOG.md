@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 -   `notecard_is_present()` API.
 
+### Changed
+
+-   Switch to using Blues version of note-c library. This will means that that 
+    large binary payload feature can be used.
+
 ## [1.2.0] - 2023-07-27
 
 ### Changed
