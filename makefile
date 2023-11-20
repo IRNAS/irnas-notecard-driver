@@ -29,6 +29,8 @@ install-dep:
 project-setup:
 	# Make a West workspace around this project
 	east init -l .
+	# Clone submodules
+	git submodule update --init --recursive
 	# Use a faster update method
 	east update -o=--depth=1 -n
 	east install toolchain
