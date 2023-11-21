@@ -20,7 +20,7 @@
 
 #include <stdlib.h>
 
-LOG_MODULE_REGISTER(note, CONFIG_NOTECARD_LOG_LEVEL);
+LOG_MODULE_REGISTER(notecard, CONFIG_NOTECARD_LOG_LEVEL);
 
 static uint8_t notecard_heap_memory[CONFIG_NOTECARD_HEAP_SIZE];
 static struct k_heap notecard_heap;
