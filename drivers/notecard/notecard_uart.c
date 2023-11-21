@@ -23,18 +23,18 @@
 static uint16_t prv_peek_buf = SERIAL_PEEK_EMPTY_MASK;
 
 /* Local pointer to the uart device that is currently used for communication  */
-static const struct device *uart_dev;
+static const struct device *prv_uart_dev;
 
 LOG_MODULE_REGISTER(notecard_uart);
 
-static bool notecard_rx_available(void)
+static bool prv_rx_available(void)
 {
 	bool result;
 
 	if (SERIAL_PEEK_EMPTY_MASK & prv_peek_buf) {
 		/* Peek buffer is empty */
 		unsigned char next_char;
-		int status = uart_poll_in(uart_dev, &next_char);
+		int status = uart_poll_in(prv_uart_dev, &next_char);
 		switch (status) {
 		case 0:
 			prv_peek_buf = next_char;
@@ -52,36 +52,36 @@ static bool notecard_rx_available(void)
 	return result;
 }
 
-static char notecard_rx(void)
+static char prv_receive(void)
 {
 	char result;
 	if (!(SERIAL_PEEK_EMPTY_MASK & prv_peek_buf)) {
 		/* Peek buffer is full */
 		result = prv_peek_buf;
 		prv_peek_buf = SERIAL_PEEK_EMPTY_MASK;
-	} else if (uart_poll_in(uart_dev, (unsigned char *)&result)) {
+	} else if (uart_poll_in(prv_uart_dev, (unsigned char *)&result)) {
 		result = '\0';
 	}
 
 	return result;
 }
 
-static bool notecard_uart_reset(void)
+static bool prv_reset(void)
 {
 	char c;
 
-	while (!uart_poll_in(uart_dev, &c)) {
+	while (!uart_poll_in(prv_uart_dev, &c)) {
 	}
 
 	return true;
 }
 
-static void noteSerialTransmit(uint8_t *text_, size_t len_, bool flush_)
+static void prv_transmit(uint8_t *text_, size_t len_, bool flush_)
 {
 	ARG_UNUSED(flush_); /* `uart_poll_out` blocks (i.e. always flushes) */
 
 	for (size_t i = 0; i < len_; ++i) {
-		uart_poll_out(uart_dev, text_[i]);
+		uart_poll_out(prv_uart_dev, text_[i]);
 		/* 100 us delay is needed to prevent overwhelming the nrfx implementation of
 		 * uart_poll_out and entering 1ms sleep between each call. */
 		k_busy_wait(100);
@@ -90,11 +90,10 @@ static void noteSerialTransmit(uint8_t *text_, size_t len_, bool flush_)
 
 void notecard_uart_attach_bus_api(const struct notecard_bus *bus)
 {
-	uart_dev = bus->dev.uart;
+	prv_uart_dev = bus->dev.uart;
 
 	/* Give note-c uart hooks. */
-	NoteSetFnSerial(notecard_uart_reset, noteSerialTransmit, notecard_rx_available,
-			notecard_rx);
+	NoteSetFnSerial(prv_reset, prv_transmit, prv_rx_available, prv_receive);
 }
 
 #endif /* NOTECARD_BUS_UART */

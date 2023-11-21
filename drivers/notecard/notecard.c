@@ -22,9 +22,9 @@
 
 LOG_MODULE_REGISTER(notecard, CONFIG_NOTECARD_LOG_LEVEL);
 
-static uint8_t notecard_heap_memory[CONFIG_NOTECARD_HEAP_SIZE];
-static struct k_heap notecard_heap;
-static struct k_mutex notecard_mutex;
+static uint8_t prv_heap_buf[CONFIG_NOTECARD_HEAP_SIZE];
+static struct k_heap prv_heap;
+static struct k_mutex prv_mutex;
 
 /**
  * @brief Helper function to check if string starts with a pattern.
@@ -95,7 +95,7 @@ static inline void prv_log_with_level(uint8_t log_level, const char *message)
  */
 static void zephyr_delay(uint32_t ms)
 {
-	k_msleep(ms);
+	k_sleep(K_MSEC(ms));
 }
 
 /**
@@ -173,7 +173,7 @@ static size_t zephyr_log_print(const char *message)
  */
 static void *zephyr_malloc(size_t size)
 {
-	void *ptr = k_heap_alloc(&notecard_heap, size, K_NO_WAIT);
+	void *ptr = k_heap_alloc(&prv_heap, size, K_NO_WAIT);
 	if (!ptr) {
 		LOG_ERR("Memory allocation failed!");
 	}
@@ -186,12 +186,15 @@ static void *zephyr_malloc(size_t size)
  */
 static void zephyr_free(void *mem)
 {
-	k_heap_free(&notecard_heap, mem);
+	k_heap_free(&prv_heap, mem);
 }
 
 static void attn_pin_cb_handler(const struct device *port, struct gpio_callback *cb,
 				gpio_port_pins_t pins)
 {
+	ARG_UNUSED(port);
+	ARG_UNUSED(pins);
+
 	struct notecard_data *data = CONTAINER_OF(cb, struct notecard_data, gpio_cb);
 	const struct device *dev = data->dev;
 	const struct notecard_config *config = dev->config;
@@ -217,6 +220,7 @@ static int prv_configure_interrupt_gpio(struct gpio_callback *gpio_cb,
 					const struct gpio_dt_spec *gpio)
 {
 	int rc;
+
 	/* Configure GPIO interrupt pin */
 	if (!device_is_ready(gpio->port)) {
 		LOG_ERR("attn_p_gpio is not ready");
@@ -253,8 +257,8 @@ static int prv_configure_interrupt_gpio(struct gpio_callback *gpio_cb,
 
 static int notecard_init(const struct device *dev)
 {
-	k_heap_init(&notecard_heap, notecard_heap_memory, CONFIG_NOTECARD_HEAP_SIZE);
-	k_mutex_init(&notecard_mutex);
+	k_heap_init(&prv_heap, prv_heap_buf, CONFIG_NOTECARD_HEAP_SIZE);
+	k_mutex_init(&prv_mutex);
 
 	NoteSetFnDebugOutput(zephyr_log_print);
 
@@ -275,7 +279,7 @@ static int notecard_init(const struct device *dev)
 
 void notecard_ctrl_take(const struct device *dev)
 {
-	k_mutex_lock(&notecard_mutex, K_FOREVER);
+	k_mutex_lock(&prv_mutex, K_FOREVER);
 	struct notecard_data *data = dev->data;
 
 	if (data->post_take_cb_data.cb) {
@@ -294,7 +298,7 @@ void notecard_ctrl_release(const struct device *dev)
 		data->pre_release_cb_data.cb(dev, data->pre_release_cb_data.user_data);
 	}
 
-	k_mutex_unlock(&notecard_mutex);
+	k_mutex_unlock(&prv_mutex);
 }
 
 size_t notecard_available_memory(void)
@@ -306,13 +310,13 @@ size_t notecard_available_memory(void)
 
 	/*  Allocate progressively smaller and smaller chunks */
 	struct object_header *prev_obj = NULL;
-	static long int max_size = 8192;
-	for (long int i = max_size; i >= (long int)sizeof(struct object_header);
-	     i = i - sizeof(struct object_header)) {
+	static size_t max_size = 8192;
+	for (size_t i = max_size; i >= sizeof(struct object_header);
+	     i -= sizeof(struct object_header)) {
 
 		while (1) {
 			struct object_header *obj;
-			obj = k_heap_alloc(&notecard_heap, i, K_NO_WAIT);
+			obj = k_heap_alloc(&prv_heap, i, K_NO_WAIT);
 			if (obj == NULL) {
 				break;
 			}
@@ -324,11 +328,11 @@ size_t notecard_available_memory(void)
 
 	/* Free the objects backwards */
 	size_t total = 0;
-	while (prev_obj != NULL) {
+	while (prev_obj) {
 		struct object_header *obj = prev_obj;
 		prev_obj = obj->prev;
 		total += obj->length;
-		k_heap_free(&notecard_heap, obj);
+		k_heap_free(&prv_heap, obj);
 	}
 
 	return total;
@@ -418,7 +422,7 @@ bool notecard_is_present(const struct device *dev)
 	uint8_t dst[2] = {0x00, 0x00};
 
 	/* Get the source id for i2c_nrfx_twi. */
-	int16_t source_id = log_source_id_get("i2c_nrfx_twi");
+	int16_t source_id = (int16_t)log_source_id_get("i2c_nrfx_twi");
 
 	/* Disable logging for i2c_nrfx_twi, as we know that it will be noisy, if notecard
 	 * is missing. */

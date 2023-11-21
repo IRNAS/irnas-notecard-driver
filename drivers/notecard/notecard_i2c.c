@@ -20,14 +20,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
-static const size_t REQUEST_HEADER_SIZE = 2;
-
-static const struct device *i2c_dev;
+static const struct device *prv_i2c_dev;
 
 LOG_MODULE_DECLARE(note);
 
-const char *notecard_i2c_receive(uint16_t device_address, uint8_t *buffer, uint16_t size,
-				 uint32_t *available)
+static const char *prv_receive(uint16_t device_address, uint8_t *buffer, uint16_t size,
+			       uint32_t *available)
 {
 	/* Notecard might need some time to process previous request, 1ms seems to be sufficient. */
 	k_msleep(1);
@@ -35,27 +33,28 @@ const char *notecard_i2c_receive(uint16_t device_address, uint8_t *buffer, uint1
 	/* Let the Notecard know that we are getting ready to read some data */
 	uint8_t sizebuf[2] = {0, (uint8_t)size};
 
-	if (i2c_write(i2c_dev, sizebuf, sizeof(sizebuf), device_address) != 0) {
+	if (i2c_write(prv_i2c_dev, sizebuf, sizeof(sizebuf), device_address) != 0) {
 		return "i2c: Unable to initate read from the Notecard\n";
 	}
 
 	/* Read from the Notecard and copy the response bytes into the response buffer */
 	uint8_t read_buf[256];
 
-	if (i2c_read(i2c_dev, read_buf, size + REQUEST_HEADER_SIZE, device_address) != 0) {
+	/* We add 2 to the size due to the request header. */
+	if (i2c_read(prv_i2c_dev, read_buf, size + 2, device_address) != 0) {
 		return "i2c: Unable to receive data from the Notecard.\n";
-	} else {
-		*available = (uint32_t)read_buf[0];
-		uint8_t bytes_to_read = read_buf[1];
-		for (size_t i = 0; i < bytes_to_read; i++) {
-			buffer[i] = read_buf[i + 2];
-		}
-
-		return NULL;
 	}
+
+	*available = (uint32_t)read_buf[0];
+	uint8_t bytes_to_read = read_buf[1];
+	for (size_t i = 0; i < bytes_to_read; i++) {
+		buffer[i] = read_buf[i + 2];
+	}
+
+	return NULL;
 }
 
-bool notecard_i2c_reset(uint16_t device_address)
+static bool prv_reset(uint16_t device_address)
 {
 	/* Nothing is needed here */
 	ARG_UNUSED(device_address);
@@ -63,7 +62,7 @@ bool notecard_i2c_reset(uint16_t device_address)
 	return true;
 }
 
-const char *notecard_i2c_transmit(uint16_t device_address, uint8_t *buffer, uint16_t size)
+static const char *prv_transmit(uint16_t device_address, uint8_t *buffer, uint16_t size)
 {
 	__ASSERT(size < 256, "i2c transmit size needs to be less than 256");
 
@@ -78,19 +77,18 @@ const char *notecard_i2c_transmit(uint16_t device_address, uint8_t *buffer, uint
 	/* Notecard might need some time to process previous request, 1ms seems to be sufficient. */
 	k_msleep(1);
 
-	return i2c_write(i2c_dev, write_buf, size + 1, device_address) == 0
+	return i2c_write(prv_i2c_dev, write_buf, size + 1, device_address) == 0
 		       ? NULL
 		       : "i2c: Unable to transmit data to the Notecard\n";
 }
 
 void notecard_i2c_attach_bus_api(const struct notecard_bus *bus)
 {
-	i2c_dev = bus->dev.i2c.bus;
+	prv_i2c_dev = bus->dev.i2c.bus;
 
 	/* Give note-c uart hooks.
 	 * Second argument tells note-c how large chunks can be send over i2c. */
-	NoteSetFnI2C(bus->dev.i2c.addr, NOTE_I2C_MAX_MAX, notecard_i2c_reset, notecard_i2c_transmit,
-		     notecard_i2c_receive);
+	NoteSetFnI2C(bus->dev.i2c.addr, NOTE_I2C_MAX_MAX, prv_reset, prv_transmit, prv_receive);
 }
 
 #endif /* NOTECARD_BUS_I2C */

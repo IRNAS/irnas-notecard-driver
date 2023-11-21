@@ -17,26 +17,26 @@
 
 LOG_MODULE_REGISTER(main);
 
-const struct device *notecard_dev = DEVICE_DT_GET(DT_NODELABEL(notecard));
+const struct device *prv_notecard_dev = DEVICE_DT_GET(DT_NODELABEL(notecard));
 
 int main(void)
 {
 	LOG_INF("Booted");
 	k_msleep(1000);
 
-	notecard_ctrl_take(notecard_dev);
-	bool present = notecard_is_present(notecard_dev);
+	notecard_ctrl_take(prv_notecard_dev);
+	bool present = notecard_is_present(prv_notecard_dev);
 	if (!present) {
 		LOG_ERR("Notecard not present, stopping sample.");
 		return 0;
 	}
 
 	LOG_INF("Notecard is present!");
-	notecard_ctrl_release(notecard_dev);
+	notecard_ctrl_release(prv_notecard_dev);
 
 	/* Create a request */
 	while (1) {
-		notecard_ctrl_take(notecard_dev);
+		notecard_ctrl_take(prv_notecard_dev);
 		J *req = NoteNewRequest("card.version");
 		J *rsp = NoteRequestResponse(req);
 		if (rsp) {
@@ -48,7 +48,7 @@ int main(void)
 			LOG_INF("No response");
 		}
 
-		notecard_ctrl_release(notecard_dev);
+		notecard_ctrl_release(prv_notecard_dev);
 		k_msleep(1000);
 	}
 }
