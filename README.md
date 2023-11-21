@@ -19,16 +19,15 @@ To use add below two snippets into your project's west.yml file and run
   url-base: https://github.com/irnas
 ```
 
-2. In the `projects` section, select revision you need:
+2. In the `projects` section, (select revision you need, latest is recommended):
 
 ```yaml
 - name: irnas-notecard-driver
     repo-path: irnas-notecard-driver
     path: irnas/irnas-notecard-driver
     remote: irnas
-    revision: v1.0.2
+    revision: <revision>
     submodules: true
-
 ```
 
 ### Device tree
@@ -72,12 +71,14 @@ snippet in device tree is enough. Check the
 [`driver/notecard/Kconfig`](./driver/notecard/Kconfig) file for other available
 Kconfig options.
 
-
 ### MCUBoot
 
-When using MCUBoot in the project you probably do not want to compile Notecard driver in the bootloader image.
+When using MCUBoot in the project you probably do not want to compile Notecard
+driver in the bootloader image.
 
-To acomplish this create `child_image` folder in your application folder. Inside it create file `mcuboot.conf` with below content:
+To accomplish this create `child_image` folder in your application folder.
+Inside it create file `mcuboot.conf` with below content:
+
 ```
 # This Kconfig fragment is merged when building mcuboot image.
 
