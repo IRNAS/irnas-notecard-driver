@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+### Added
+
+-   Improve notecard logging interface. Log levels from the note-c library are now correctly
+    translated to the Zephyr's log levels.
+
 ### Changed
 
 -   Change name of the logging module from `note` to `notecard`, since `note` was too vague (it

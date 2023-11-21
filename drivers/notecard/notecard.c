@@ -27,6 +27,68 @@ static struct k_heap notecard_heap;
 static struct k_mutex notecard_mutex;
 
 /**
+ * @brief Helper function to check if string starts with a pattern.
+ *
+ * @param[in] str	Null-terminated string.
+ * @param[in] pattern   Null-terminated string.
+ *
+ * @return True if string starts with pattern, false otherwise.
+ */
+static inline bool prv_str_starts_with(const char *str, const char *pattern)
+{
+	return strncmp(str, pattern, strlen(pattern)) == 0;
+}
+
+/**
+ * @brief Helper function to determine log level of the message.
+ *
+ * @param[in] message
+ *
+ * @return log level of the message.
+ */
+static inline uint8_t prv_determine_log_level(const char *message)
+{
+	if (prv_str_starts_with(message, "[ERROR]")) {
+		return LOG_LEVEL_ERR;
+	}
+	if (prv_str_starts_with(message, "[WARN]")) {
+		return LOG_LEVEL_WRN;
+	}
+	if (prv_str_starts_with(message, "[INFO]")) {
+		return LOG_LEVEL_INF;
+	}
+	if (prv_str_starts_with(message, "[DEBUG]")) {
+		return LOG_LEVEL_DBG;
+	}
+	return LOG_LEVEL_NONE;
+}
+
+/**
+ * @brief Helper function to log message with appropriate log level.
+ *
+ * @param[in] log_level
+ * @param[in] message
+ */
+static inline void prv_log_with_level(uint8_t log_level, const char *message)
+{
+	switch (log_level) {
+	case LOG_LEVEL_ERR:
+		LOG_ERR("%s", message);
+		break;
+	case LOG_LEVEL_WRN:
+		LOG_WRN("%s", message);
+		break;
+	case LOG_LEVEL_INF:
+		LOG_INF("%s", message);
+		break;
+	case LOG_LEVEL_DBG:
+	default:
+		LOG_DBG("%s", message);
+		break;
+	}
+}
+
+/**
  * @brief Zephyr-specific `delay` function required by the note-c lib.
  *
  * Puts the current thread to sleep.
@@ -50,9 +112,21 @@ static uint32_t zephyr_millis(void)
  * @brief Zephyr-specific `log print` function required by the note-c lib.
  *
  * Below logic cleans up the message by removing trailing whitespace characters before printing.
+ *
+ * Additionaly, log_level logic determines the log level of the message (since every message is
+ * precedded with either, [ERROR], [WARN], [INFO], or [DEBUG]) and then uses appropriate log macro.
+ * Sadly macros could not be used, since log_level in Z_LOG (macro used by all public LOG_* macros)
+ * needs to be known at compile time, which is not the case here.
  */
 static size_t zephyr_log_print(const char *message)
 {
+	static uint8_t log_level = LOG_LEVEL_NONE;
+
+	if (log_level == LOG_LEVEL_NONE) {
+		log_level = prv_determine_log_level(message);
+		return 0;
+	}
+
 	char cleaned_msg[256];
 	// size_t bytes_left = strlen(message);
 	// size_t chunk_size = 255;
@@ -72,7 +146,8 @@ static size_t zephyr_log_print(const char *message)
 	if (strlen(message) > 256) {
 		strncpy(cleaned_msg, message, 256);
 		cleaned_msg[255] = '\0';
-		LOG_DBG("%s", cleaned_msg);
+		prv_log_with_level(log_level, cleaned_msg);
+		log_level = LOG_LEVEL_NONE;
 		return 0;
 	}
 
@@ -86,7 +161,8 @@ static size_t zephyr_log_print(const char *message)
 	cleaned_msg[end - message] = '\0';
 
 	if (strlen(cleaned_msg) > 0) {
-		LOG_DBG("%s", cleaned_msg);
+		prv_log_with_level(log_level, cleaned_msg);
+		log_level = LOG_LEVEL_NONE;
 	}
 
 	return 0;
