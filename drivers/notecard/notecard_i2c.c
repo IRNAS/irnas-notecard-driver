@@ -27,9 +27,6 @@ LOG_MODULE_DECLARE(note);
 static const char *prv_receive(uint16_t device_address, uint8_t *buffer, uint16_t size,
 			       uint32_t *available)
 {
-	/* Notecard might need some time to process previous request, 1ms seems to be sufficient. */
-	k_msleep(1);
-
 	/* Let the Notecard know that we are getting ready to read some data */
 	uint8_t sizebuf[2] = {0, (uint8_t)size};
 
@@ -73,9 +70,6 @@ static const char *prv_transmit(uint16_t device_address, uint8_t *buffer, uint16
 	for (size_t i = 0; i < size; i++) {
 		write_buf[i + 1] = buffer[i];
 	}
-
-	/* Notecard might need some time to process previous request, 1ms seems to be sufficient. */
-	k_msleep(1);
 
 	return i2c_write(prv_i2c_dev, write_buf, size + 1, device_address) == 0
 		       ? NULL

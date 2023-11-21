@@ -16,6 +16,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 -   Change name of the logging module from `note` to `notecard`, since `note` was too vague (it
     could be mistakenly related to the `note-c`).
 
+### Removed
+
+-   Remove 1ms delays before every i2c I/O transaction, since they are not 
+    needed any more with the current note-c library.
+
 ## [1.3.0] - 2023-11-16
 
 ### Added
