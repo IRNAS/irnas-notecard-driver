@@ -84,4 +84,17 @@ To acomplish this create `child_image` folder in your application folder. Inside
 # Explicitly disable some drivers, they are otherwise enabled implicitly
 # through dts.
 CONFIG_NOTECARD=n
-``` 
+```
+
+## `note-c` library
+
+This driver depends on a `note-c` library which is contained in the project as a
+git submodule. Whenever this driver is enabled (located in the device tree)
+`note-c` is automatically added to the project.
+
+If user has the need to only have the `note-c` library in the project, but not
+the Notecard driver, he or she can enable `CONFIG_NOTE_C_LIB` Kconfig symbol to
+get access just to the `note-c` library in the project.
+
+He or she might be writing unit tests that test the JSON parsing logic on the
+`native_posx` board, where Notecard driver is not needed.

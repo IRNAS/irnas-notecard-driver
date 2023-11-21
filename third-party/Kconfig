@@ -1,0 +1,6 @@
+menuconfig NOTE_C_LIB
+	bool "note-c library"
+
+	help
+        Enable compilation of note-c library
+

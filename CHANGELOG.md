@@ -8,13 +8,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Added
 
--   Improve notecard logging interface. Log levels from the note-c library are now correctly
-    translated to the Zephyr's log levels.
+-   Improve notecard logging interface. Log levels from the note-c library are 
+    now correctly translated to the Zephyr's log levels.
 
 ### Changed
 
--   Change name of the logging module from `note` to `notecard`, since `note` was too vague (it
-    could be mistakenly related to the `note-c`).
+-   Change name of the logging module from `note` to `notecard`, since `note` 
+    was too vague (it could be mistakenly related to the `note-c`).
+
+-   Separate compilation of the `note-c` lib from Notecard driver. `note-c` is 
+    now included and compiled via newly added Kconfig symbol, 
+    `CONFIG_NOTE_C_LIB.` `CONFIG_NOTECARD` always selects it, as it needs it.
+    Refer to the `README.md` for more info.
 
 ### Removed
 
