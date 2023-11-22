@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [1.4.0] - 2023-11-22
+
 ### Added
 
 -   Improve notecard logging interface. Log levels from the note-c library are 
@@ -87,7 +89,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 -   Add function for determining available heap memory used by notecard driver.
 -   Print logs now remove trailing whitespace, so everything looks nice.
 
-[Unreleased]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.4.0...HEAD
+
+[1.4.0]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.3.0...v1.4.0
 
 [1.3.0]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.2.0...v1.3.0
 
