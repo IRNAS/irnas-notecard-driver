@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 -   Improve notecard logging interface. Log levels from the note-c library are 
     now correctly translated to the Zephyr's log levels.
+-   Update CI infrastructure and migrate to the trunk-based development model.
 
 ### Changed
 
