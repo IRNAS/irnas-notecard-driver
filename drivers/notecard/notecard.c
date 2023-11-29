@@ -421,13 +421,6 @@ bool notecard_is_present(const struct device *dev)
 	struct i2c_msg msgs[1];
 	uint8_t dst[2] = {0x00, 0x00};
 
-	/* Get the source id for i2c_nrfx_twi. */
-	int16_t source_id = (int16_t)log_source_id_get("i2c_nrfx_twi");
-
-	/* Disable logging for i2c_nrfx_twi, as we know that it will be noisy, if notecard
-	 * is missing. */
-	log_filter_set(NULL, 0, source_id, LOG_LEVEL_NONE);
-
 	/* Write some data to the notecard to see if you get back response. */
 	msgs[0].buf = dst;
 	msgs[0].len = 2U;
@@ -437,7 +430,6 @@ bool notecard_is_present(const struct device *dev)
 
 	/* Enable back logging. Set the highest level possible, it will be limited by the
 	 * actual compiled in level. */
-	log_filter_set(NULL, 0, source_id, LOG_LEVEL_DBG);
 	return present;
 #endif
 }
