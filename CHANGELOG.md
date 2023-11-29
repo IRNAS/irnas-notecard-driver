@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [1.4.1] - 2023-11-29
+
 ## [1.4.1] - 2023-11-22
 
 ### Changed
@@ -96,7 +98,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 -   Add function for determining available heap memory used by notecard driver.
 -   Print logs now remove trailing whitespace, so everything looks nice.
 
-[Unreleased]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.4.1...HEAD
+
+[1.4.1]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.4.0...v1.4.1
 
 [1.4.0]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.3.0...v1.4.0
 
