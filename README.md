@@ -42,7 +42,7 @@ For i2c communication:
 ```yaml
 &i2c0 {
     notecard: notecard@17 {
-        compatible = "irnas,notecard";
+        compatible = "blues,notecard";
         reg = <0x17>;
     };
 };
@@ -59,7 +59,7 @@ For uart communication:
     pinctrl-names = "default", "sleep";
 
     notecard: notecard {
-        compatible = "irnas,notecard";
+        compatible = "blues,notecard";
     };
 };
 ```
