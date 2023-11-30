@@ -6,9 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
-## [1.4.1] - 2023-11-29
+### Changed
 
-## [1.4.1] - 2023-11-22
+-   Add back `log_level_set` in `notecard_is_present` function, as the the compiler errors were 
+    resolved.
+
+
+## [1.4.1] - 2023-11-29
 
 ### Changed
 
