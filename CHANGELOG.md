@@ -6,11 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+## [1.4.2] - 2023-11-30
+
 ### Changed
 
 -   Add back `log_level_set` in `notecard_is_present` function, as the the compiler errors were 
     resolved.
-
 
 ## [1.4.1] - 2023-11-29
 
@@ -102,7 +103,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 -   Add function for determining available heap memory used by notecard driver.
 -   Print logs now remove trailing whitespace, so everything looks nice.
 
-[Unreleased]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.4.1...HEAD
+[Unreleased]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.4.2...HEAD
+
+[1.4.2]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.4.1...v1.4.2
 
 [1.4.1]: https://github.com/IRNAS/irnas-notecard-driver/compare/v1.4.0...v1.4.1
 
