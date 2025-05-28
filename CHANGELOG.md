@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
+### Changed
+
+-   Update CI and `pre-commit` files in the project to the latest version.
+-   Run `pre-commit` on the whole project
+-   Update project to use NCS v3.0.1.
+
 ### Fixed
 
 -   Fix the disable logging logic in `notecard_is_present` to not assert if `i2c_nrfx_twim` is being used instead of `i2c_nrfx_twi`.
