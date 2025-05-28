@@ -14,37 +14,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Changed
 
--   Add back `log_level_set` in `notecard_is_present` function, as the the compiler errors were 
+-   Add back `log_level_set` in `notecard_is_present` function, as the the compiler errors were
     resolved.
 
 ## [1.4.1] - 2023-11-29
 
 ### Changed
 
--   Temporary remove `log_level_set` in `notecard_is_present` function, until 
+-   Temporary remove `log_level_set` in `notecard_is_present` function, until
     the compiler errors are resolved.
 
 ## [1.4.0] - 2023-11-22
 
 ### Added
 
--   Improve notecard logging interface. Log levels from the note-c library are 
+-   Improve notecard logging interface. Log levels from the note-c library are
     now correctly translated to the Zephyr's log levels.
 -   Update CI infrastructure and migrate to the trunk-based development model.
 
 ### Changed
 
--   Change name of the logging module from `note` to `notecard`, since `note` 
+-   Change name of the logging module from `note` to `notecard`, since `note`
     was too vague (it could be mistakenly related to the `note-c`).
 
--   Separate compilation of the `note-c` lib from Notecard driver. `note-c` is 
-    now included and compiled via newly added Kconfig symbol, 
+-   Separate compilation of the `note-c` lib from Notecard driver. `note-c` is
+    now included and compiled via newly added Kconfig symbol,
     `CONFIG_NOTE_C_LIB.` `CONFIG_NOTECARD` always selects it, as it needs it.
     Refer to the `README.md` for more info.
 
 ### Removed
 
--   Remove 1ms delays before every i2c I/O transaction, since they are not 
+-   Remove 1ms delays before every i2c I/O transaction, since they are not
     needed any more with the current note-c library.
 
 ## [1.3.0] - 2023-11-16
@@ -55,21 +55,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Changed
 
--   Switch to using Blues version of note-c library. This will means that that 
+-   Switch to using Blues version of note-c library. This will means that that
     large binary payload feature can be used.
 
 ## [1.2.0] - 2023-07-27
 
 ### Changed
 
--   Update note-c submodule to v0.1.1 tag with longer 5 second retries which 
+-   Update note-c submodule to v0.1.1 tag with longer 5 second retries which
     solve web.post issues.
 
 ## [1.1.1] - 2023-07-12
 
 ### Changed
 
--   Switch to using Irnas's fork of note-c library so you are still using 
+-   Switch to using Irnas's fork of note-c library so you are still using
     pre-non-turboIO logic, with shorter retryies.
 
 ## [1.1.0] - 2023-07-03
@@ -80,14 +80,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Fixed
 
--   Stabilize I2C communication by adding 1ms delay before every i2c I/O 
+-   Stabilize I2C communication by adding 1ms delay before every i2c I/O
     transaction.
 
 ## [1.0.2] - 2023-05-22
 
 ### Changed
 
--   Long debug log messages are now not ignored, but printed, up to 255 
+-   Long debug log messages are now not ignored, but printed, up to 255
     characters.
 
 ## [1.0.1] - 2023-05-18

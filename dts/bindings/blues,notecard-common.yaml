@@ -6,8 +6,8 @@ properties:
     type: phandle-array
     required: false
     description: |
-      ATTN_P - Attention pin 
+      ATTN_P - Attention pin
 
-      Pin controlled by Notecard used to inform the host MCU of certain 
-      asynchronous events (such as incoming data availability, or Notecard 
+      Pin controlled by Notecard used to inform the host MCU of certain
+      asynchronous events (such as incoming data availability, or Notecard
       motion) in an interrupt-driven manner rather than just polling.

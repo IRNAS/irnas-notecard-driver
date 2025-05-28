@@ -3,4 +3,3 @@ menuconfig NOTE_C_LIB
 
 	help
         Enable compilation of note-c library
-
