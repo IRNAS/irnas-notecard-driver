@@ -31,7 +31,7 @@ static const char *prv_receive(uint16_t device_address, uint8_t *buffer, uint16_
 	uint8_t sizebuf[2] = {0, (uint8_t)size};
 
 	if (i2c_write(prv_i2c_dev, sizebuf, sizeof(sizebuf), device_address) != 0) {
-		return "i2c: Unable to initate read from the Notecard\n";
+		return "i2c: Unable to initiate read from the Notecard\n";
 	}
 
 	/* Read from the Notecard and copy the response bytes into the response buffer */

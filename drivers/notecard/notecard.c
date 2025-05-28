@@ -113,7 +113,7 @@ static uint32_t zephyr_millis(void)
  *
  * Below logic cleans up the message by removing trailing whitespace characters before printing.
  *
- * Additionaly, log_level logic determines the log level of the message (since every message is
+ * Additionally, log_level logic determines the log level of the message (since every message is
  * precedded with either, [ERROR], [WARN], [INFO], or [DEBUG]) and then uses appropriate log macro.
  * Sadly macros could not be used, since log_level in Z_LOG (macro used by all public LOG_* macros)
  * needs to be known at compile time, which is not the case here.
@@ -132,7 +132,7 @@ static size_t zephyr_log_print(const char *message)
 	// size_t chunk_size = 255;
 	// int i = 0;
 	// while (bytes_left) {
-	// 	/* Handle the case where the size of the image sent is not divisable with
+	// 	/* Handle the case where the size of the image sent is not divisible with
 	// 	 * chunk_size.
 	// 	 */
 	// 	size_t bytes_to_send = bytes_left >= chunk_size ? chunk_size : bytes_left;
@@ -241,7 +241,7 @@ static int prv_configure_interrupt_gpio(struct gpio_callback *gpio_cb,
 		LOG_ERR("failed to add callback (err=%d)", rc);
 		return rc;
 	}
-	/* Regardles to what the trigger is set, we do not want interrupt to fire at init, below
+	/* Regardless to what the trigger is set, we do not want interrupt to fire at init, below
 	 * line ensures that. */
 	gpio_flags_t interrupt_type =
 		gpio_pin_get_dt(gpio) ? GPIO_INT_LEVEL_INACTIVE : GPIO_INT_LEVEL_ACTIVE;
@@ -269,7 +269,7 @@ static int notecard_init(const struct device *dev)
 	const struct notecard_config *config = dev->config;
 
 	/* Dev is later required in notecard_delayed_work_handler and attn_pin_cb_handler, cause it
-	 * can not be fetched with CONTAINTER_OF macro. */
+	 * can not be fetched with CONTAINER_OF macro. */
 	data->dev = dev;
 
 	return config->attn_gpio_in_use

@@ -51,7 +51,7 @@ extern "C" {
  * @brief Typedef for a generic notecard callback
  *
  * @param[in] dev	Device struct of the notecard driver instance related to the callback.
- * @param[in] user_data	Arbitary data that was passed to notecard_*_cb_register() call.
+ * @param[in] user_data	Arbitrary data that was passed to notecard_*_cb_register() call.
  */
 typedef void (*notecard_cb_t)(const struct device *dev, void *user_data);
 
@@ -97,7 +97,7 @@ size_t notecard_available_memory(void);
  *
  * @param[in] dev		Device struct of notecard driver instance.
  * @param[in] attn_cb		Attn pin callback.
- * @param[in] user_data		Arbitary data that is passed to the callback.
+ * @param[in] user_data		Arbitrary data that is passed to the callback.
  */
 void notecard_attn_cb_register(const struct device *dev, notecard_cb_t attn_cb, void *user_data);
 
@@ -111,7 +111,7 @@ void notecard_attn_cb_register(const struct device *dev, notecard_cb_t attn_cb, 
  *
  * @param[in] dev		Device struct of notecard driver instance.
  * @param[in] post_take_cb	Post take callback.
- * @param[in] user_data		Arbitary data that is passed to the callback.
+ * @param[in] user_data		Arbitrary data that is passed to the callback.
  */
 void notecard_post_take_cb_register(const struct device *dev, notecard_cb_t post_take_cb,
 				    void *user_data);
@@ -126,7 +126,7 @@ void notecard_post_take_cb_register(const struct device *dev, notecard_cb_t post
  *
  * @param[in] dev		Device struct of notecard driver instance.
  * @param[in] pre_release_cb	Pre release callback.
- * @param[in] user_data		Arbitary data that is passed to the callback.
+ * @param[in] user_data		Arbitrary data that is passed to the callback.
  */
 void notecard_pre_release_cb_register(const struct device *dev, notecard_cb_t pre_release_cb,
 				      void *user_data);
