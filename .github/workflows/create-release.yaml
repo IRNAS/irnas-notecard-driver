@@ -13,10 +13,10 @@ env:
 
 jobs:
   update-changelog:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch history for all branches and tags
 
@@ -24,7 +24,7 @@ jobs:
         id: validate-input
         run: |
           # Check if input version is in correct format
-          if [[ ! ${{ inputs.version }} =~ v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          if [[ ! ${{ inputs.version }} =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::Invalid input version: wrong format!"
             exit 1
           fi
@@ -35,7 +35,7 @@ jobs:
           fi
 
       - name: Update Changelog
-        uses: IRNAS/keep-a-changelog-new-release@v1.3.1
+        uses: thomaseizinger/keep-a-changelog-new-release@3.1.0
         with:
           tag: ${{ inputs.version }}
 
@@ -58,6 +58,7 @@ jobs:
     uses: ./.github/workflows/build.yaml
     with:
       checkout_ref: ${{ inputs.version }}
+    secrets: inherit
 
   call-publish-release:
     needs: call-build
@@ -69,11 +70,11 @@ jobs:
     # Only run cleanup if either call-build or call-publish-release fail.
     needs: [call-build, call-publish-release]
     if: ${{ always() && contains(join(needs.*.result, ','), 'failure') }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ inputs.version }}
           # Fetch two commits, so you can hard reset below

@@ -13,8 +13,6 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
-#include <stdlib.h>
-
 LOG_MODULE_REGISTER(main);
 
 const struct device *prv_notecard_dev = DEVICE_DT_GET(DT_NODELABEL(notecard));
