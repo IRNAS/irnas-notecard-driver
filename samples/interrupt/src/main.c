@@ -13,8 +13,6 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
 
-#include <stdlib.h>
-
 LOG_MODULE_REGISTER(main);
 
 const struct device *notecard_dev = DEVICE_DT_GET(DT_NODELABEL(notecard));
@@ -25,7 +23,7 @@ void callback(const struct device *dev, void *user_data)
 	LOG_INF("Hello from %s", user_dev->name);
 }
 
-void main(void)
+int main(void)
 {
 	/* In last argument pass the device as user data just for demonstration purposes. */
 	notecard_attn_cb_register(notecard_dev, callback, (void *)notecard_dev);

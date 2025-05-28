@@ -17,17 +17,18 @@ on:
       - "main"
 
 env:
-  EAST_CODECHECKER_CI_MODE: 1
   CODECHECKER_CREDENTIALS: ${{ secrets.CODECHECKER_CREDENTIALS }}
   EAST_CODECHECKER_SERVER_URL: ${{ secrets.CODECHECKER_SERVER_URL }}
   GIT_CREDENTIALS: ${{ secrets.GIT_CREDENTIALS }}
 
 jobs:
   codechecker:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/irnas/ncs-zephyr-v3.0.1-ci:latest
     defaults:
       run:
-        shell: bash
+        shell: bash -l {0}
         # Set work dir to "project" for all 'run' calls. Beware, everything else
         # (actions, 'with' params, etc.) still needs to reference full path.
         working-directory: project
@@ -35,51 +36,45 @@ jobs:
     steps:
       - name: Checkout last PR commit
         if: github.event_name == 'pull_request'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           path: project
 
       - name: Checkout last tag
         if: github.event_name == 'workflow_dispatch'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ inputs.checkout_ref }}
           path: project
 
       - name: Checkout main
         if: github.event_name == 'push'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: main
           path: project
 
+      - name: Copy .nrfutil folder to HOME
+        run: |
+          # This avoid the bug behavior, where the installed nrfutil commands
+          # (done in the Dockerfile) are not available, due to the GitHub Action
+          # Runner changing the HOME variable.
+          # See this issue for more details:
+          # https://github.com/IRNAS/irnas-docker-software/issues/9
+          cp -r /root/.nrfutil $HOME
+
       # This is needed due to the later east update (west update) command that
       # could be cloning from the private repos. The provided token in
       # GIT_CREDENTIALS needs to be a fine-grained token, with access to all
-      # repositores, with "Read-only" access level to the Content repository
+      # repositories, with "Read-only" access level to the Content repository
       # permissions.
       - name: Set Git credentials
         run: |
           git config --global credential.helper '!f() { printf "%s\n" "username=runner" "password=$GIT_CREDENTIALS"; };f'
 
-      - name: Add LLVM repositories
-        run: |
-          # If updating llvm version do not forget to update distro name
-          wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc
-          sudo add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-16 main"
-          sudo apt-get update
-
-      - name: Install and cache apt packages
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: clang-16 clang-tidy-16 cppcheck gcc-multilib
-          # Update this manually when changing the packages above, increment
-          # only minor version to keep APT caches separate.
-          version: 3.0
-
       - name: Retrieve cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-modules
         with:
@@ -91,24 +86,11 @@ jobs:
             test
             tools
             zephyr
-            ~/.local/share/east/downloads/
-            ~/.local/share/east/tooling/nrfutil
           # Note above two lines, if we are caching entire ~/.local/share/east
           # folder then cache action fails during download/extract step
-          key:
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{
             hashFiles('project/west.yml') }}
           restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}-
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.8"
-          cache: "pip"
-          cache-dependency-path: project/scripts/requirements.txt
-
-      - name: Install Python dependencies
-        run: pip install -r scripts/requirements.txt
 
       - name: Install dependencies
         run: make install-dep
@@ -131,8 +113,7 @@ jobs:
         run: make codechecker-check
 
       - name: Store
-        if:
-          github.event_name == 'workflow_dispatch' || github.event_name ==
+        if: github.event_name == 'workflow_dispatch' || github.event_name ==
           'push'
         run: make codechecker-store
 
@@ -142,7 +123,13 @@ jobs:
 
       - name: Package diffs
         if: ${{ always() && github.event_name == 'pull_request' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: codechecker-diffs
           path: project/codechecker-diffs/*
+
+      - name: Post-build clean
+        if: always()
+        # See https://github.com/actions/runner/issues/2058 why
+        # github.workspace doesn't work.
+        run: rm -rf $GITHUB_WORKSPACE/.west

@@ -1,0 +1,14 @@
+sample:
+  name: Version test sample
+common:
+  sysbuild: true
+  tags: quick_build
+  platform_allow:
+    - nrf52840dk/nrf52840
+tests:
+  samples.version_test.i2c:
+    extra_args:
+      - DTC_OVERLAY_FILE=notecard_over_i2c.overlay
+  samples.version_test.uart:
+    extra_args:
+      - DTC_OVERLAY_FILE=notecard_over_uart.overlay
