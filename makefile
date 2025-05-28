@@ -49,7 +49,6 @@ release: quick-build
 # Pre-package target is only run in release process.
 pre-package:
 	mkdir -p artifacts
-	cp release/*.zip artifacts
 	cp scripts/pre_changelog.md artifacts
 	cp scripts/post_changelog.md artifacts
 
