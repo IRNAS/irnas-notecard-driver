@@ -422,12 +422,24 @@ bool notecard_is_present(const struct device *dev)
 	uint8_t dst[2] = {0x00, 0x00};
 
 #if CONFIG_LOG
-	/* Get the source id for i2c_nrfx_twi. */
-	int16_t source_id = (int16_t)log_source_id_get("i2c_nrfx_twi");
 
-	/* Disable logging for i2c_nrfx_twi, as we know that it will be noisy, if notecard
-	 * is missing. */
-	log_filter_set(NULL, 0, source_id, LOG_LEVEL_NONE);
+	/* Disable logging for i2c_nrfx, as we know that it will be noisy, if notecard
+	 * is missing.
+	 *
+	 * Since we do not know whether twi or twim is used, we check both. */
+
+	int16_t source_id = (int16_t)log_source_id_get("i2c_nrfx_twi");
+	if (source_id < 0) {
+		source_id = (int16_t)log_source_id_get("i2c_nrfx_twim");
+	}
+	if (source_id >= 0) {
+		log_filter_set(NULL, 0, source_id, LOG_LEVEL_NONE);
+	} else {
+		/* Some other i2c is being used, do nothing. */
+		LOG_WRN("Could not get source id for i2c_nrfx_twi or i2c_nrfx_twim. Unable to "
+			"disable logging for i2c.");
+	}
+
 #endif
 
 	/* Write some data to the notecard to see if you get back response. */
@@ -440,7 +452,9 @@ bool notecard_is_present(const struct device *dev)
 	/* Enable back logging. Set the highest level possible, it will be limited by the
 	 * actual compiled in level. */
 #if CONFIG_LOG
-	log_filter_set(NULL, 0, source_id, LOG_LEVEL_DBG);
+	if (source_id >= 0) {
+		log_filter_set(NULL, 0, source_id, LOG_LEVEL_DBG);
+	}
 #endif
 	return present;
 #endif
